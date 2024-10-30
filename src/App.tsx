@@ -1,17 +1,14 @@
+// src/App.tsx
+
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Button from './component/Button/Button';
+import Welcome from './component/SignIn and SignUp/Welcome';
 
-function App() {
-  return (
-    <>
-
-
-
-
-    </>
-  );
-}
+const App: React.FC = () => {
+    return (
+        <div>
+            <Welcome />
+        </div>
+    );
+};
 
 export default App;
