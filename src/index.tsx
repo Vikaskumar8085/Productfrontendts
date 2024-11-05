@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { store } from './Redux/Store';
 import { Provider } from "react-redux"
+import { BrowserRouter } from 'react-router-dom';
 import {
   QueryClientProvider,
   QueryClient
@@ -17,8 +18,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryclient}>
-
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </QueryClientProvider>
     </Provider>
   </React.StrictMode>
