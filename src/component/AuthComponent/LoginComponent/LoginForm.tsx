@@ -26,8 +26,7 @@ const LoginForm: React.FC = () => {
                 const response = await loginapiservice(values);
                 if (response.success) {
                     alert(response?.message)
-
-                 localStorage.setItem("token",response.result)
+                    localStorage.setItem("token", response.result)
                 }
             } catch (error: any) {
                 console.log(error?.message)

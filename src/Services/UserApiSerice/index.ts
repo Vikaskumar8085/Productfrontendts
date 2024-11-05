@@ -25,3 +25,13 @@ export const loginapiservice = async (data: loginauth) => {
   const response = await apiInstance.post<loginauth>("/user/login", data);
   return response.data;
 };
+
+// forget Password
+interface forgetPassword {
+  Email: String;
+}
+
+export const forgetpasswordapicall = async (data: forgetPassword) => {
+  const response = await apiInstance.post("/user/forget-password", data);
+  return response.data;
+};
