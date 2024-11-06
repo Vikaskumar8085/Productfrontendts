@@ -6,6 +6,7 @@ import Signup from './Pages/AuthPages/SignUp/Signup';
 import ForgetPassword from './Pages/AuthPages/ForgetPassword/ForgetPassword';
 import Home from './Pages/Home/Home';
 import Dashboard from './Pages/AdminPages/Dashboard';
+import Profile from './Pages/Profile/Profile';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path='/forgetpassword' element={<ForgetPassword />} />
         <Route path='/verify/:id' element={<div>verify</div>} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/profile' element={<Profile />} />
 
         <Route path='*' element={<div className='bg-gray-100 min-h-screen'>asdf</div>} />
 
