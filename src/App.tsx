@@ -7,6 +7,9 @@ import ForgetPassword from './Pages/AuthPages/ForgetPassword/ForgetPassword';
 import Home from './Pages/Home/Home';
 import Dashboard from './Pages/AdminPages/Dashboard';
 import Profile from './Pages/Profile/Profile';
+import Product from './Pages/ProductPage/Product';
+import 'react-quill/dist/quill.snow.css';
+import Error from './Pages/ErrorPage/Error';
 
 function App() {
   return (
@@ -19,11 +22,8 @@ function App() {
         <Route path='/verify/:id' element={<div>verify</div>} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
-
-        <Route path='*' element={<div className='bg-gray-100 min-h-screen'>asdf</div>} />
-
-
-
+        <Route path='/product' element={<Product />} />
+        <Route path='*' element={<Error />} />
       </Routes>
 
 

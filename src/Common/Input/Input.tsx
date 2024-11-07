@@ -5,9 +5,9 @@ interface Inputprops {
 
 const Input: React.FC = () => {
     return (
-        <div>
-
-        </div>
+        <>
+            <input type="text" />
+        </>
     )
 }
 

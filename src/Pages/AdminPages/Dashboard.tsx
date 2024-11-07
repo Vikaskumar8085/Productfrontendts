@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../component/Layout/Layout';
+import Breadcrumb from '../../Common/BreadCrumb/BreadCrumb';
+import Card from '../../Common/Card/Card';
+import ReactQuill from 'react-quill';
 
 const Dashboard: React.FC = () => {
     const [darkMode, setDarkMode] = useState(false);
@@ -23,7 +26,11 @@ const Dashboard: React.FC = () => {
         <>
 
             <Layout>
-                dashboard
+                <div className="flex flex-row w-full  justify-center px-3 gap-10 relative block overflow-hidden">
+                    <ReactQuill className='w-full h-20' />
+
+
+                </div>
             </Layout>
         </>
     );
