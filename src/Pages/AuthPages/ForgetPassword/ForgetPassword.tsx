@@ -3,9 +3,7 @@ import ForgetpasswordForm from '../../../component/AuthComponent/ForgetPassword/
 
 function ForgetPassword() {
     return (
-        <>
-            <ForgetpasswordForm />
-
+        <>            <ForgetpasswordForm />
         </>
     )
 }

@@ -24,7 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
                     <Header collable={collable} setcollable={setcollable} />
-                    <div className="content p-4  bg-yellow-800 min-h-screen">
+                    <div className="content p-4  min-h-screen">
                         {children}
                     </div>
                 </div>

@@ -1,13 +1,20 @@
 import React from 'react'
-import Layout from '../../component/Layout/Layout'
-import Breadcrumb from '../../Common/BreadCrumb/BreadCrumb'
+import Layout from '../../../component/Layout/Layout'
+import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
 
-const Product: React.FC = () => {
+const Candidate: React.FC = () => {
     return (
         <Layout>
-            <Breadcrumb pageName='Product' />
-            <section className='product flex sm:flex-wrap'>
-
+            <Breadcrumb pageName='Candidate' />
+            <section className='product flex '>
+                <button className='bg-yellow-500'>
+                    add candidate
+                </button>
+                <select>
+                    <option value="bulk action">bulk action</option>
+                    <option value="upload csv">csv upload</option>
+                    <option value="bulk action">bulk action</option>
+                </select>
             </section>
             {/* show table */}
             <div className="overflow-x-auto">
@@ -58,4 +65,4 @@ const Product: React.FC = () => {
     )
 }
 
-export default Product
+export default Candidate

@@ -19,9 +19,7 @@ function Sidebar({ collable }: sidbarprops) {
                         {/* Sidebar Links with Dropdowns */}
                         <nav>
                             {/* Dropdown Item 1 */}
-                            <div>
-                                <Link to="/dashboard" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Dashboard</Link>
-                            </div>
+
                             <div>
                                 <Link to="/profile" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Profile</Link>
                             </div>
@@ -30,15 +28,14 @@ function Sidebar({ collable }: sidbarprops) {
                                     onClick={() => toggleDropdown(1)}
                                     className="flex items-center w-full p-2 text-left hover:bg-gray-700 focus:outline-none transition"
                                 >
-                                    <span className="flex-1">Product</span>
+                                    <span className="flex-1">Candidate Management</span>
                                     <span className="ml-2">{openDropdown === 1 ? '-' : '+'}</span>
                                 </button>
                                 <div
                                     className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 1 ? 'max-h-40' : 'max-h-0'
                                         }`}
                                 >
-                                    <Link to="/product" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">add product</Link>
-
+                                    <Link to="/candidate" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600"> Candidate</Link>
                                 </div>
                             </div>
 
@@ -48,15 +45,14 @@ function Sidebar({ collable }: sidbarprops) {
                                     onClick={() => toggleDropdown(2)}
                                     className="flex items-center w-full p-2 text-left hover:bg-gray-700 focus:outline-none  transition"
                                 >
-                                    <span className="flex-1">Reports</span>
+                                    <span className="flex-1">Settings</span>
                                     <span className="ml-2">{openDropdown === 2 ? '-' : '+'}</span>
                                 </button>
                                 <div
                                     className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 2 ? 'max-h-40' : 'max-h-0'
                                         }`}
                                 >
-                                    <Link to="/profile" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Profile</Link>
-
+                                    <Link to="/designation" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Designation</Link>
                                 </div>
                             </div>
 

@@ -6,7 +6,6 @@ function Signup() {
         <>
             <SingupForm />
 
-
         </>
     )
 }

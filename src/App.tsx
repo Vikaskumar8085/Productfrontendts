@@ -5,11 +5,12 @@ import Login from './Pages/AuthPages/Login/Login';
 import Signup from './Pages/AuthPages/SignUp/Signup';
 import ForgetPassword from './Pages/AuthPages/ForgetPassword/ForgetPassword';
 import Home from './Pages/Home/Home';
-import Dashboard from './Pages/AdminPages/Dashboard';
-import Profile from './Pages/Profile/Profile';
-import Product from './Pages/ProductPage/Product';
+import Dashboard from './Pages/DashboardPages/Dashboard/Dashboard';
 import 'react-quill/dist/quill.snow.css';
 import Error from './Pages/ErrorPage/Error';
+import Candidate from './Pages/DashboardPages/Candidate/Candidate';
+import Designation from './Pages/DashboardPages/Designation/Designation';
+import Profile from './Pages/DashboardPages/Profile/Profile';
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
         <Route path='/verify/:id' element={<div>verify</div>} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
-        <Route path='/product' element={<Product />} />
+        <Route path='/candidate' element={<Candidate />} />
+        <Route path='/designation' element={<Designation />} />
         <Route path='*' element={<Error />} />
       </Routes>
 
