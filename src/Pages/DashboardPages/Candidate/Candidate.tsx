@@ -1,16 +1,40 @@
 import React from 'react'
 import Layout from '../../../component/Layout/Layout'
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
+import useState from 'react';
+import Modal from '../../../Common/Modal/Modal';
 
 const Candidate: React.FC = () => {
+    const [isOpen, setIsOpen] = React.useState<boolean | null>(false)
     return (
         <Layout>
             <Breadcrumb pageName='Candidate' />
-            <section className='product flex '>
-                <button className='bg-yellow-500'>
+            <section className='product gap-2 flex flex-row mb-3 p-2 bg-gray-200'>
+                <button onClick={() => setIsOpen(true)} className='bg-white capitalize border py-1 px-3 '>
                     add candidate
                 </button>
-                <select>
+                {/* model */}
+                {isOpen && <Modal setOpen={setIsOpen}>
+                    <div className='form'>
+
+                        <form>
+
+                            <div className="mb-3">
+                                <label htmlFor="Name">Name</label>
+                                <input type="text" />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="Email" className='w-100 '>Email</label>
+                                <input type="text" className='border' />
+                            </div>
+
+                        </form>
+
+                    </div>
+                </Modal>}
+
+                {/* model */}
+                <select className='p-1'>
                     <option value="bulk action">bulk action</option>
                     <option value="upload csv">csv upload</option>
                     <option value="bulk action">bulk action</option>
