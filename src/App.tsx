@@ -24,6 +24,7 @@ function App() {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/candidate' element={<Candidate />} />
+        <Route path='/Reason' element={ <>h</>} />
         <Route path='/designation' element={<Designation />} />
         <Route path='*' element={<Error />} />
       </Routes>
