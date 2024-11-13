@@ -5,10 +5,12 @@ import useState from 'react';
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import { candidateTypes } from '../../../Services/CandidateApiService/candidatetypes';
-import { addproductapicall } from '../../../Services/CandidateApiService';
+import { addproductapicall, fetchcandidatetapicall } from '../../../Services/CandidateApiService';
+import useEffect from 'react';
 
 const Candidate: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false)
+    const [isData, setData] = React.useState<[]>([]);
     const formik = useFormik<candidateTypes>({
         initialValues: {
             name: "",
@@ -22,18 +24,80 @@ const Candidate: React.FC = () => {
             state: "",
             preferredLocation: "",
             dob: "",
+            designation: ""
         },
-        onSubmit: async (values) => {
+        onSubmit: async (values, { resetForm }) => {
 
             try {
+                console.log(values, "values >>>>>>>>>>")
                 const response = await addproductapicall(values);
                 console.log(response, "response call")
-
+                if (response.success) {
+                    fetchcandidatedata()
+                    setIsOpen(false)
+                    resetForm();
+                }
             } catch (error: any) {
                 console.log(error)
+                setIsOpen(false)
+                resetForm();
+
             }
         },
     });
+
+    const fetchcandidatedata = async () => {
+        try {
+            const response = await fetchcandidatetapicall();
+            if (response.success) {
+                setData(response.result)
+            }
+        } catch (error: any) {
+            console.log(error?.message)
+        }
+    }
+
+    const candidateTabledata = isData.map((item, index) => {
+        const { name,
+            resumeTitle,
+            contactNumber,
+            whatsappNumber,
+            email,
+            workExp,
+            currentCTC,
+            currentLocation,
+            state,
+            preferredLocation,
+            dob,
+            designation } = item;
+
+        return (
+            <>
+                <tr>
+                    <td key={index} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{name} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{email} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{contactNumber} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{whatsappNumber} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{resumeTitle} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{workExp} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{currentCTC} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{currentLocation} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{state} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{preferredLocation} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{dob} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{designation} </td>
+                </tr>
+
+            </>
+        )
+    })
+
+
+    React.useEffect(() => {
+        fetchcandidatedata()
+    }, [0])
+
     return (
         <Layout>
             <Breadcrumb pageName='Candidate' />
@@ -205,7 +269,21 @@ const Candidate: React.FC = () => {
                                         <p className="text-red-500 text-sm mt-1">{formik.errors.preferredLocation}</p>
                                     )}
                                 </div>
-
+                                {/* designation */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Designation</label>
+                                    <input
+                                        type="text"
+                                        name="designation"
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.designation}
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    />
+                                    {formik.touched.preferredLocation && formik.errors.preferredLocation && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.preferredLocation}</p>
+                                    )}
+                                </div>
                                 {/* Date of Birth Field */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
@@ -230,60 +308,66 @@ const Candidate: React.FC = () => {
                                 Submit
                             </button>
                         </form>
-
-
-
                     </div>
                 </Modal>}
 
                 {/* model */}
-                <select className='p-1'>
-                    <option value="bulk action">bulk action</option>
-                    <option value="upload csv">csv upload</option>
-                    <option value="bulk action">bulk action</option>
-                </select>
+                {/* <select className='p-1'>
+                    <option value="-- select option --">Bulk Action</option>
+                    <option value="upload csv" onClick={}>Csv upload</option>
+
+                </select> */}
             </section>
             {/* show table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full border border-gray-200 bg-white rounded-lg">
                     <thead>
                         <tr className="bg-gray-100 border-b border-gray-200">
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                ID
+                            </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 Name
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Position
+                                Email
+
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Location
+                                Contact Number
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Salary
+                                Whatsapp Number
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Action
+                                ResumeTitle
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                work Experience
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Current Ctc
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Current Location
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                state
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Preferred Location
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                dob
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="border-b last:border-none hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">John Doe</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Developer</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">New York</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">$80,000</td>
-                        </tr>
-                        <tr className="bg-gray-50 border-b last:border-none hover:bg-gray-100">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Jane Smith</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Designer</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">San Francisco</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">$75,000</td>
-                        </tr>
-                        <tr className="border-b last:border-none hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Bob Johnson</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Manager</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Seattle</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">$90,000</td>
-                        </tr>
+                        {candidateTabledata}
+
                     </tbody>
                 </table>
             </div>

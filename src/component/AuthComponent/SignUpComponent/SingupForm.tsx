@@ -23,7 +23,7 @@ const SingupForm: React.FC = () => {
         },
         onSubmit: async (values, { setSubmitting, setErrors }) => {
             try {
-                const response = await registerapiservice(values);
+                const response: any = await registerapiservice(values);
                 console.log(response)
                 if (response.success) {
                     alert("user registration complete successfully")

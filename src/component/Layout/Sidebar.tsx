@@ -36,6 +36,7 @@ function Sidebar({ collable }: sidbarprops) {
                                         }`}
                                 >
                                     <Link to="/candidate" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600"> Candidate</Link>
+                                    <Link to="/bulk-upload" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Bulk Action</Link>
                                 </div>
                             </div>
 

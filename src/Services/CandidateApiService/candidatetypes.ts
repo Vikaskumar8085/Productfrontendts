@@ -11,6 +11,7 @@ export interface candidateTypes {
   state: string;
   preferredLocation: string;
   dob: string;
+  designation: string;
 }
 
 // fetch product interface

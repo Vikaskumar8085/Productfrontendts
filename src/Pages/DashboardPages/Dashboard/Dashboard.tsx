@@ -7,7 +7,6 @@ const Dashboard: React.FC = () => {
 
             <Layout>
                 <div className="flex flex-row w-full  justify-center px-3 gap-10 relative block overflow-hidden">
-
                     dashboard
                 </div>
             </Layout>

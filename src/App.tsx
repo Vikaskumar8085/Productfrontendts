@@ -11,6 +11,7 @@ import Error from './Pages/ErrorPage/Error';
 import Candidate from './Pages/DashboardPages/Candidate/Candidate';
 import Designation from './Pages/DashboardPages/Designation/Designation';
 import Profile from './Pages/DashboardPages/Profile/Profile';
+import CandidateUpload from './Pages/DashboardPages/Candidate/CandidateUpload';
 
 function App() {
   return (
@@ -24,7 +25,8 @@ function App() {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/candidate' element={<Candidate />} />
-        <Route path='/Reason' element={ <>h</>} />
+        <Route path='/bulk-upload' element={<CandidateUpload />} />
+        <Route path='/Reason' element={<>h</>} />
         <Route path='/designation' element={<Designation />} />
         <Route path='*' element={<Error />} />
       </Routes>

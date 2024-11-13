@@ -11,3 +11,9 @@ export interface CandidateForm {
   Region: string;
   UserId: number;
 }
+
+//  designation
+
+export interface DesignationType {
+  title: string;
+}

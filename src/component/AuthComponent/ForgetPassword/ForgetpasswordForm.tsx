@@ -6,7 +6,6 @@ interface ForgetFormValue {
     Email: string
 }
 
-
 const ForgetpasswordForm: React.FC = () => {
 
     const formik = useFormik<ForgetFormValue>({
@@ -16,7 +15,7 @@ const ForgetpasswordForm: React.FC = () => {
         onSubmit: async (values) => {
             try {
                 console.log(values, "values")
-                const response = await forgetpasswordapicall(values);
+                const response: any = await forgetpasswordapicall(values);
                 if (response.success) {
                     console.log(response)
                 }

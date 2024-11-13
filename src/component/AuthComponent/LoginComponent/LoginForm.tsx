@@ -23,7 +23,7 @@ const LoginForm: React.FC = () => {
         },
         onSubmit: async (values) => {
             try {
-                const response = await loginapiservice(values);
+                const response: any = await loginapiservice(values);
                 if (response.success) {
                     localStorage.setItem("token", response.result)
                     window.location.href = "/dashboard"
