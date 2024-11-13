@@ -18,12 +18,12 @@ export const fetchdesignationapicall = async () => {
   return response.data;
 };
 
-// export const removedesignationapicall = async () => {
-//   const response: any | null = await apiInstance.delete();
-//   return response.data;
-// };
+export const removedesignationapicall = async (value:number) => {
+  const response: any | null = await apiInstance.delete("/designation/delete-designation/"+value);
+  return response.data;
+};
 
-// export const updatedesignationapicall = async () => {
-//   const response: any | null = await apiInstance.put();
-//   return response.data;
-// };
+export const updatedesignationapicall = async (id: number, value: { title: string }) => {
+  const response = await apiInstance.put(`/designation/update-designation/${id}`, value);
+  return response.data;
+};

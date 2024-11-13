@@ -20,10 +20,10 @@ export const fetchcandidatetapicall = async () => {
 
 // remove candidate api service
 
-// export const RemoveCandidateapicall = async () => {
-//   const response: any | null = await apiInstance.delete("/");
-//   return response.data;
-// };
+export const RemoveCandidateapicall = async (data:number) => {
+  const response: any | null = await apiInstance.delete("/candidate/delete-candidate/"+data);
+  return response.data;
+};
 
 // edit candidate api service
 
