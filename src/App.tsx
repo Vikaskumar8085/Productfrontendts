@@ -12,6 +12,10 @@ import Candidate from './Pages/DashboardPages/Candidate/Candidate';
 import Designation from './Pages/DashboardPages/Designation/Designation';
 import Profile from './Pages/DashboardPages/Profile/Profile';
 import CandidateUpload from './Pages/DashboardPages/Candidate/CandidateUpload';
+import Client from './Pages/DashboardPages/Client/Client';
+import Region from './Pages/DashboardPages/Region/Region';
+import Tag from './Pages/DashboardPages/Tag/Tag';
+import Education from './Pages/DashboardPages/Education/Education';
 
 function App() {
   return (
@@ -28,6 +32,10 @@ function App() {
         <Route path='/bulk-upload' element={<CandidateUpload />} />
         <Route path='/Reason' element={<>h</>} />
         <Route path='/designation' element={<Designation />} />
+        <Route path='/client' element={<Client />} />
+        <Route path='/region' element={<Region />} />
+        <Route path='/education' element={<Education />} />
+        <Route path='/tag' element={<Tag/>} />
         <Route path='*' element={<Error />} />
       </Routes>
 

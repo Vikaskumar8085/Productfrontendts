@@ -3,7 +3,7 @@ import Layout from '../../../component/Layout/Layout';
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
-import { addDesignationapicall, fetchdesignationapicall } from '../../../Services/Designation';
+import { addDesignationapicall, fetchdesignationapicall } from '../../../Services/Admin/Designation';
 import useEffect from 'react';
 
 
@@ -25,7 +25,7 @@ const Designation: React.FC = () => {
                 if (response) {
                     console.log(response)
                     setOpen(false)
-                    fetchdesignation()  
+                    fetchdesignation()
                 }
                 setOpen(false)
                 formik.resetForm()

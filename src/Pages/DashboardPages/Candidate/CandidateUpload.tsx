@@ -3,7 +3,7 @@ import { useFormik, FormikErrors, FormikHelpers } from 'formik';
 import { TfiDownload } from "react-icons/tfi";
 import Papa from 'papaparse';
 import Layout from '../../../component/Layout/Layout';
-import { csvbulkuploadapicall, csvtemplateapicall } from '../../../Services/CandidateApiService';
+import { csvbulkuploadapicall, csvtemplateapicall } from '../../../Services/Admin/CandidateApiService';
 
 interface FormValues {
     file: File | null;

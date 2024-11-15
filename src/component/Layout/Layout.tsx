@@ -2,12 +2,22 @@ import React, { ReactNode, useState } from 'react'
 import Sidebar from './Sidebar'
 import { TfiAlignLeft, TfiAlignRight } from "react-icons/tfi";
 import Header from './Header';
+import useEffect from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface LayoutProps {
     children: ReactNode;
 }
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [collable, setcollable] = useState<Boolean>(false);
+
+    // const navigate = useNavigate();
+    // React.useEffect(() => {
+
+    //     if (!localStorage.getItem('token')) {
+    //         navigate('/login')
+    //     }
+    // })
 
 
     return (

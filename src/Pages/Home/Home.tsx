@@ -21,7 +21,7 @@ function Home() {
             <div className=' h-screen' >
                 <h1>hello</h1>
 
-                <DocViewer pluginRenderers={DocViewerRenderers} documents={docs} />
+                {/* <DocViewer pluginRenderers={DocViewerRenderers} documents={docs} /> */}
             </div>
 
         </>

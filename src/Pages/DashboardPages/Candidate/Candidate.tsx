@@ -4,8 +4,8 @@ import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
 import useState from 'react';
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
-import { candidateTypes } from '../../../Services/CandidateApiService/candidatetypes';
-import { addproductapicall, fetchcandidatetapicall } from '../../../Services/CandidateApiService';
+import { candidateTypes } from '../../../Services/Admin/CandidateApiService/candidatetypes';
+import { addproductapicall, fetchcandidatetapicall } from '../../../Services/Admin/CandidateApiService';
 import useEffect from 'react';
 
 const Candidate: React.FC = () => {

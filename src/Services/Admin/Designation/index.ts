@@ -1,5 +1,5 @@
-import {DesignationType} from "../../Types";
-import apiInstance from "../apiservice/apiInstance";
+import {DesignationType} from "../../../Types";
+import apiInstance from "../../apiservice/apiInstance";
 
 // // add Designation
 export const addDesignationapicall = async (value: DesignationType) => {

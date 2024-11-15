@@ -1,4 +1,4 @@
-import apiInstance from "../apiservice/apiInstance";
+import apiInstance from "../../apiservice/apiInstance";
 import {candidateTypes} from "./candidatetypes";
 
 // create product api service
