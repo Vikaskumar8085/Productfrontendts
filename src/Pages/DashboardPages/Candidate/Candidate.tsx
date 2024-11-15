@@ -1,16 +1,17 @@
 import React from 'react'
 import Layout from '../../../component/Layout/Layout'
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
-import useState from 'react';
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
-import { candidateTypes } from '../../../Services/CandidateApiService/candidatetypes';
+import { candidateTypes,candidateDataTypes } from '../../../Services/CandidateApiService/candidatetypes';
 import { addproductapicall, fetchcandidatetapicall,RemoveCandidateapicall } from '../../../Services/CandidateApiService';
-import useEffect from 'react';
+import {fetchdesignationapicall} from '../../../Services/Designation';
 const Candidate: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false)
     const [isData, setData] = React.useState<[]>([]);
+    const [designation, setDesignation] = React.useState<[]>([]);
     const [editCandidate, setEditCandidate] = React.useState<candidateTypes | null>(null);
+    
     const formik = useFormik<candidateTypes>({
         initialValues: {
             name: "",
@@ -71,7 +72,7 @@ const Candidate: React.FC = () => {
         formik.setValues(candidate); // Pre-fill the form with candidate data
         setIsOpen(true); // Open the modal
       };
-    const candidateTabledata = isData.map((item, index) => {
+    const candidateTabledata = isData.map((item:candidateDataTypes, index) => {
         const {
             id, 
             name,
@@ -85,8 +86,24 @@ const Candidate: React.FC = () => {
             state,
             preferredLocation,
             dob,
-            designation } = item;
-
+            Designation} = item;
+            const formattedDob = new Date(dob).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+          });
+    const fetchdesignation = async () => {
+        try {
+            const response = await fetchdesignationapicall();
+            if (response.success) {
+                setDesignation(response.result);
+            }
+        }
+        catch (error: any) {
+            console.log(error?.message, "error message");
+        }
+    }
+   
         return (
             <>
                 <tr>
@@ -101,10 +118,10 @@ const Candidate: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{currentLocation} </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{state} </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{preferredLocation} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{dob} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{designation} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formattedDob} </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{Designation.title} </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-         
+       
           <button 
             onClick={() =>handleDelete(id)}
             className="px-4 py-2 bg-red-400 border capitalize"
@@ -121,7 +138,7 @@ const Candidate: React.FC = () => {
 
     React.useEffect(() => {
         fetchcandidatedata()
-    }, [0])
+    }, [])
 
     return (
       <Layout>
@@ -446,6 +463,9 @@ const Candidate: React.FC = () => {
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   dob
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  Designation
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Actions

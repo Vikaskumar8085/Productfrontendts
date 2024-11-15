@@ -69,6 +69,7 @@ const CandidateUpload: React.FC = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'text/csv',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
 
@@ -132,7 +133,7 @@ const CandidateUpload: React.FC = () => {
 
                 {/* Preview CSV Data */}
                 {csvData && (
-                    <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6">
+                    <div className="w-full overflow-auto bg-white shadow-lg rounded-lg p-6 max-w-[100vw] max-h-[60vh]">
                         <h2 className="text-lg font-semibold mb-4">CSV Preview</h2>
                         <table className="table-auto w-full border-collapse">
                             <thead>
