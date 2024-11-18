@@ -1,19 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface clienttype {
-    values: []
+    values: any[]
 }
-
 const initialState: clienttype = {
     values: []
 }
-
 const clientSlice = createSlice({
     name: "client ",
     initialState,
     reducers: {
-        setclient: (state, action) => {
-
+        setclient: (state, action: PayloadAction<any>) => {
+            state.values = action.payload;
         }
     }
 })

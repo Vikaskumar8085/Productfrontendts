@@ -69,10 +69,11 @@ function Sidebar({ collable }: sidbarprops) {
                                     <span className="ml-2">{openDropdown === 2 ? '-' : '+'}</span>
                                 </button>
                                 <div
-                                    className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 2 ? 'max-h-40' : 'max-h-0'
+                                    className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 2 ? 'max-h-auto' : 'max-h-0'
                                         }`}
                                 >
                                     <Link to="/designation" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Designation</Link>
+                                    <Link to="/Reason" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Reason</Link>
                                     <Link to="/region" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Region</Link>
                                     <Link to="/tag" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Tag</Link>
                                     <Link to="/education" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Education</Link>

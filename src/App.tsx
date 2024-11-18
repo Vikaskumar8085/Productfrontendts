@@ -16,6 +16,8 @@ import Client from './Pages/DashboardPages/Client/Client';
 import Region from './Pages/DashboardPages/Region/Region';
 import Tag from './Pages/DashboardPages/Tag/Tag';
 import Education from './Pages/DashboardPages/Education/Education';
+import Reason from './Pages/DashboardPages/Reason/Reason';
+
 
 function App() {
   return (
@@ -30,12 +32,12 @@ function App() {
         <Route path='/profile' element={<Profile />} />
         <Route path='/candidate' element={<Candidate />} />
         <Route path='/bulk-upload' element={<CandidateUpload />} />
-        <Route path='/Reason' element={<>h</>} />
         <Route path='/designation' element={<Designation />} />
         <Route path='/client' element={<Client />} />
         <Route path='/region' element={<Region />} />
         <Route path='/education' element={<Education />} />
-        <Route path='/tag' element={<Tag/>} />
+        <Route path='/tag' element={<Tag />} />
+        <Route path='/Reason' element={<Reason />} />
         <Route path='*' element={<Error />} />
       </Routes>
 

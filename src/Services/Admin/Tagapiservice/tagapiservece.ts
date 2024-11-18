@@ -2,14 +2,14 @@ import apiInstance from "../../apiservice/apiInstance";
 
 // create tags api call
 
-export const createtagapicall = async () => {
-  const response = await apiInstance.post("");
+export const createtagapicall = async (data: any) => {
+  const response = await apiInstance.post("/tag/create-tag", data);
   return response.data;
 };
 
-// fetch tag api call
+// fetch tags
 export const fetchtagapicall = async () => {
-  const response = await apiInstance.get("");
+  const response = await apiInstance.get("/tag/fetch-tag");
   return response.data;
 };
 
