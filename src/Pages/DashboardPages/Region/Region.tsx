@@ -35,29 +35,43 @@ const Region = () => {
             </section>
 
             {isOpen && <Modal setOpen={setIsOpen}>
-                <div className="form">
+                <div className="form bg-white shadow-lg rounded-lg p-6 w-full max-w-md mx-auto">
                     <form onSubmit={formik.handleSubmit}>
-                        <div className="flex flex-col mb-4">
-                            <label className="mb-2 text-gray-700 font-medium text-lg" htmlFor="designation">
+
+                       <div className="form-title mb-4 text-center">
+                            <h3 className="text-2xl font-semibold text-gray-800">Add Region</h3>
+                        </div>
+
+                        {/* Name Field */}
+                        <div className="flex flex-col mb-6">
+                            <label
+                                htmlFor="Name"
+                                className="mb-2 text-gray-700 font-medium text-base"
+                            >
                                 Name
                             </label>
                             <input
                                 type="text"
                                 {...formik.getFieldProps("Name")}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 name="Name"
                                 id="Name"
+                                placeholder="Enter your name"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
                             />
                         </div>
+
+                        {/* Submit Button */}
                         <div className="flex">
                             <button
                                 type="submit"
-                                className="w-full bg-blue-500 text-white text-sm font-semibold uppercase py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            >   Submit
+                                className="w-full bg-blue-500 text-white text-sm font-medium uppercase py-2 rounded-lg hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                Submit
                             </button>
                         </div>
                     </form>
                 </div>
+
             </Modal>}
 
             {/* table */}

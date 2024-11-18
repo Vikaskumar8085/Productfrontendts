@@ -28,30 +28,49 @@ const Reason: React.FC = () => {
             <Layout>
                 <Breadcrumb pageName='Reason' />
 
-                <section className='p-4 bg-gray-300 w-full relative block overflow-x-hidden mb-3'>
+                <section className='p-2 bg-gray-300 w-full relative block overflow-x-hidden mb-3'>
                     <button className='m-3 px-4 py-2 bg-white rounded-sm text-md ' onClick={() => setIsOpen(true)}>
                         add Reason
                     </button>
                 </section>
                 {isOpen && <Modal setOpen={setIsOpen}>
-                    <div className="form">
-                        <form >
-                            <div className="form-title mb-3">
-                                <h3 className='text-1xl'>Add Reason</h3>
+                    <div className="form bg-white shadow-lg rounded-lg p-6 w-full max-w-md mx-auto">
+                        <form onSubmit={formik.handleSubmit}>
+                            {/* Form Title */}
+                            <div className="form-title mb-4 text-center">
+                                <h3 className="text-2xl font-semibold text-gray-800">Add Reason</h3>
                             </div>
 
-                            <div className='mb-3 w-full'>
-                                <label htmlFor="Name" className='mb-2 min-w-full '>Name</label>
-                                <input type="text" {...formik.getFieldProps("reason")} name="" id="" />
-
+                            {/* Name Field */}
+                            <div className="mb-4">
+                                <label
+                                    htmlFor="reason"
+                                    className="block text-sm font-medium text-gray-600 mb-2"
+                                >
+                                    Name
+                                </label>
+                                <input
+                                    type="text"
+                                    {...formik.getFieldProps("reason")}
+                                    name="reason"
+                                    id="reason"
+                                    placeholder="Enter reason"
+                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
+                                />
                             </div>
-                            <div className='w-full '>
-                                <button type='submit' className='bg-blue-400 text-white text-md capitalize  w-full py-2 px-4 rounded-md '>submit</button>
+
+                            {/* Submit Button */}
+                            <div className="w-full">
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                                >
+                                    Submit
+                                </button>
                             </div>
-
-
                         </form>
                     </div>
+
                 </Modal>}
 
 
