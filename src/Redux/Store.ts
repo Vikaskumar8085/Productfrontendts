@@ -3,6 +3,7 @@ import UserSlice from "./UserSlice/index";
 import CandidateSlice from "./CandidateSlice/CandidateSlice";
 import Tagslice from "./TagSlice/Tagslice";
 import clientSlice from "./ClientSlice/Clientslice";
+import Regionslice from "./Region/Regionslice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     candidate: CandidateSlice,
     client: clientSlice,
     tag: Tagslice,
+    region: Regionslice,
   },
 });
 

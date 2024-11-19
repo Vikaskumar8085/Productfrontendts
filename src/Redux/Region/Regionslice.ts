@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface Regiontype {
+  [x: string]: any;
   value: any[];
 }
 const initialState: Regiontype = {

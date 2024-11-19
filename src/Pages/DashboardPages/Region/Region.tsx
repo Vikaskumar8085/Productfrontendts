@@ -3,6 +3,10 @@ import Layout from '../../../component/Layout/Layout'
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
+import { createregionapicall, fetchregionapicall } from '../../../Services/Admin/Regionapiservice/regionapiserver';
+import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
+import { setaddRegionitems, setRegionitems } from '../../../Redux/Region/Regionslice';
+
 
 interface regionType {
     Name: string;
@@ -10,14 +14,21 @@ interface regionType {
 
 const Region = () => {
     const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
-
+    const regionfetch = useAppSelector(state => state.region.values)
+    console.log(regionfetch, "region fetch")
+    const dispatch = useAppDispatch();
     const formik = useFormik<regionType>({
         initialValues: {
             Name: ""
         },
         onSubmit: async (value) => {
             try {
-                console.log(value)
+                const response: any = await createregionapicall(value);
+                console.log(response)
+                if (response.success) {
+                    dispatch(setaddRegionitems(response.result))
+
+                }
                 formik.resetForm();
             } catch (error: any) {
                 console.log(error?.message)
@@ -25,6 +36,27 @@ const Region = () => {
             }
         }
     })
+
+
+    const getRegion = async () => {
+        try {
+            const repsonse: unknown | any = await fetchregionapicall();
+            if (repsonse.success) {
+                dispatch(setRegionitems(repsonse.result))
+
+            }
+        } catch (error: any) {
+            console.log(error?.message)
+
+        }
+    }
+
+    React.useEffect(() => {
+        getRegion();
+    }, [0])
+
+
+ 
 
     return (
         <Layout>
@@ -38,7 +70,7 @@ const Region = () => {
                 <div className="form bg-white shadow-lg rounded-lg p-6 w-full max-w-md mx-auto">
                     <form onSubmit={formik.handleSubmit}>
 
-                       <div className="form-title mb-4 text-center">
+                        <div className="form-title mb-4 text-center">
                             <h3 className="text-2xl font-semibold text-gray-800">Add Region</h3>
                         </div>
 
@@ -105,3 +137,7 @@ const Region = () => {
 }
 
 export default Region
+
+function dispatch(arg0: any) {
+    throw new Error('Function not implemented.');
+}

@@ -14,7 +14,7 @@ const Educationslice = createSlice({
     seteducationitems: (state, action: PayloadAction<any>) => {
       state.values = action.payload;
     },
-    setaddeducationitems: (state, action: payloadAction<any>) => {
+    setaddeducationitems: (state, action: PayloadAction<any>) => {
       state.values.push(action.payload);
     },
   },
