@@ -1,7 +1,7 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface educationtype {
-  values: [];
+  values: any[];
 }
 const initialState: educationtype = {
   values: [],
@@ -11,7 +11,12 @@ const Educationslice = createSlice({
   name: "educationslice",
   initialState,
   reducers: {
-    seteducationitems: (state, action) => {},
+    seteducationitems: (state, action: PayloadAction<any>) => {
+      state.values = action.payload;
+    },
+    setaddeducationitems: (state, action: payloadAction<any>) => {
+      state.values.push(action.payload);
+    },
   },
 });
 
