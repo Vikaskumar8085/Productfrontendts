@@ -50,7 +50,7 @@ function Tag() {
             }
 
         } catch (error: any) {
-            console.log(error?.message)
+            console.log("fetch tag error", error?.message)
         }
     }
 

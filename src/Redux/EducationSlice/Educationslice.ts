@@ -20,5 +20,5 @@ const Educationslice = createSlice({
   },
 });
 
-export const {seteducationitems} = Educationslice.actions;
+export const {seteducationitems,setaddeducationitems} = Educationslice.actions;
 export default Educationslice.reducer;

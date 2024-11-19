@@ -14,7 +14,7 @@ interface regionType {
 
 const Region = () => {
     const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
-    const regionfetch = useAppSelector(state => state.region.values)
+    const regionfetch = useAppSelector(state => state.region.value)
     console.log(regionfetch, "region fetch")
     const dispatch = useAppDispatch();
     const formik = useFormik<regionType>({
@@ -27,7 +27,8 @@ const Region = () => {
                 console.log(response)
                 if (response.success) {
                     dispatch(setaddRegionitems(response.result))
-
+                    setIsOpen(false)
+                    getRegion()
                 }
                 formik.resetForm();
             } catch (error: any) {
@@ -124,7 +125,15 @@ const Region = () => {
                         </tr>
                     </thead>
                     <tbody>
-
+                        {regionfetch.length > 0 && regionfetch.map((item: any, index: number) => (
+                            <tr key={index} className='border-b border-gray-200'>
+                                <td>{item.id}</td>
+                                <td>{item.Name}</td>
+                                <td>
+                                    <button className='bg-red-500 text-white px-4 py-2 rounded-md'>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
 
                     </tbody>
                 </table>

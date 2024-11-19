@@ -3,17 +3,28 @@ import Layout from '../../../component/Layout/Layout'
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
-
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
+import { setreasonitems, setaddreasonitems } from "../../../Redux/ReasonSlice/reasonSlice";
+import { fetchreasionapicall, createreasionapicall } from "../../../Services/Admin/ReasonApiService/index";
+  
 const Reason: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false);
-
+    const reasonfetch = useAppSelector(state => state.reason.value)
+    console.log(reasonfetch, "reason fetch")
+    const dispatch = useAppDispatch();
     const formik = useFormik({
         initialValues: {
-
+            reason: ""
         },
         onSubmit: async (value) => {
             try {
-                console.log(value)
+                const response: any = await createreasionapicall(value);
+                console.log(response, "response")
+                if (response.success) {
+                    // dispatch(setaddreasonitems(response.result))    
+                    setIsOpen(false)
+                    getReason()
+                }
                 formik.resetForm();
                 setIsOpen(false)
             } catch (error: any) {
@@ -21,7 +32,15 @@ const Reason: React.FC = () => {
             }
         }
     })
-
+    const getReason = async () => {
+        const response: any = await fetchreasionapicall();
+        if (response.success) {
+            dispatch(setreasonitems(response.result))
+        }
+    }
+    React.useEffect(() => {
+        getReason()
+    }, [0])
     return (
 
         <>
@@ -92,7 +111,15 @@ const Reason: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-
+                            {reasonfetch && reasonfetch.map((item: any, index: number) => (
+                                <tr key={index}>
+                                    <td>{item.id}</td>
+                                    <td>{item.reason}</td>
+                                    <td>
+                                        <button className='bg-red-500 text-white px-4 py-2 rounded-md'>Delete</button>
+                                    </td>
+                                </tr>
+                            ))}
 
                         </tbody>
                     </table>
