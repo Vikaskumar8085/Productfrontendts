@@ -1,16 +1,25 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-interface Regiontype {}
-const initialState: Regiontype = {};
+interface Regiontype {
+  value: any[];
+}
+const initialState: Regiontype = {
+  value: [],
+};
 
 const Regionslice = createSlice({
   name: "Regionslice",
   initialState,
   reducers: {
-    setRegion: (state, action) => {},
+    setRegionitems: (state, action: PayloadAction<any>) => {
+      state.value = action.payload;
+    },
+    setaddRegionitems: (state, action: PayloadAction<any>) => {
+      state.value.push(action.payload);
+    },
   },
 });
 
-export const {setRegion} = Regionslice.actions;
+export const {setRegionitems, setaddRegionitems} = Regionslice.actions;
 
 export default Regionslice.reducer;
