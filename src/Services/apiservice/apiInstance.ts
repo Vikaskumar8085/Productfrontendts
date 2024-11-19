@@ -7,7 +7,8 @@ const apiInstance = axios.create({
 apiInstance.interceptors.request.use(
   (config) => {
     const getToken: string | null = localStorage.getItem("token");
-    const token = getToken ? JSON.parse(getToken) : null;
+
+    const token = getToken ? getToken : null;
 
     // Ensure headers exist before assigning Authorization
     if (token && config.headers) {

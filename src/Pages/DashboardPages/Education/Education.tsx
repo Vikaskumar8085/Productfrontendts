@@ -3,27 +3,76 @@ import Layout from '../../../component/Layout/Layout'
 import { useFormik } from 'formik';
 import Modal from '../../../Common/Modal/Modal';
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
+import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
+import {
+  createEducationapicall,
+  fetcheducationapicall,
+} from "../../../Services/Admin/educationapiservices/Educationapiservice";
+import {
+  seteducationitems,
+  setaddeducationitems,
+} from "../../../Redux/EducationSlice/Educationslice";
+
 interface educationType {
     ugCourse: string,
     pgCourse: string | any,
+    postPgCourse: string | any,
+    candidateId: number
 }
 const Education = () => {
-    const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
-
+    const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);  
+    const dispatch = useAppDispatch();
+    const educationfetch = useAppSelector(state => state.education.values);
+   
     const formik = useFormik<educationType>({
         initialValues: {
             ugCourse: "",
-            pgCourse: ""
+            pgCourse: "",
+            postPgCourse: "",
+            candidateId: 1
         },
         onSubmit: async (values) => {
             try {
-                console.log(values, "vallsijflsjdf")
+                const response: any = await createEducationapicall(values);
+                if (response.success) {
+                    dispatch(setaddeducationitems(response.result))
+                    setIsOpen(false)
+                }
+                formik.resetForm();
+                setIsOpen(false)
+                
             } catch (error: any) {
                 console.log(error?.message)
 
             }
         }
     })
+    const getEducation = async () => {
+        try {
+            const response: any = await fetcheducationapicall();
+            dispatch(seteducationitems(response.result))
+        } catch (error: any) {
+            console.log(error?.message)
+        }
+    }
+    React.useEffect(() => {
+        getEducation()
+    }, [0])
+    const educationData = (educationfetch || []).map(
+      (item: any, index: number) => {
+        return (
+          <tr key={index}>
+            <td>{item.id}</td>
+            <td>{item.ugCourse}</td>
+            <td>{item.pgCourse}</td>
+            <td>{item.postPgCourse}</td>
+            <td>
+              <button>Delete</button>
+            </td>
+          </tr>
+        );
+      }
+    );
 
     return (
         <Layout>
@@ -74,6 +123,19 @@ const Education = () => {
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
                             />
                         </div>
+                    <div className="form-input">
+                            <label htmlFor="pgCourse" className="block text-sm font-medium text-gray-600 mb-1">
+                               Post PG Course
+                            </label>
+                            <input
+                                type="text"
+                                {...formik.getFieldProps("postPgCourse")}
+                                name='postPgCourse'
+                                id='postPgCourse'
+                                placeholder='Enter your Post PG course'
+                                className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700'
+                            />
+                        </div>
 
                         {/* Submit Button */}
                         <div className="form-btn">
@@ -105,15 +167,17 @@ const Education = () => {
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 PG Course
                             </th>
-
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Post PG Course
+                            </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-
-
+                        
+{educationData}
                     </tbody>
                 </table>
             </div>
