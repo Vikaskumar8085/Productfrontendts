@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { store } from './Redux/Store';
 import { Provider } from "react-redux"
 import { BrowserRouter } from 'react-router-dom';
+import "react-country-state-city/dist/react-country-state-city.css";
 import {
   QueryClientProvider,
   QueryClient

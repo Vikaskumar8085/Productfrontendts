@@ -6,11 +6,24 @@ import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import { candidateTypes } from '../../../Services/Admin/CandidateApiService/candidatetypes';
 import { addproductapicall, fetchcandidatetapicall } from '../../../Services/Admin/CandidateApiService';
+import {
+    CitySelect,
+    CountrySelect,
+    StateSelect,
+    LanguageSelect,
+    RegionSelect,
+    PhonecodeSelect
+} from "react-country-state-city";
+
 import useEffect from 'react';
 
 const Candidate: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false)
     const [isData, setData] = React.useState<[]>([]);
+    const [region, setRegion] = React.useState<any>("");
+    const [phonecode, setPhoneCode] = React.useState<any>("");
+    const [countryid, setCountryid] = React.useState<any>(0);
+    const [stateid, setstateid] = React.useState<any>(0);
     const formik = useFormik<candidateTypes>({
         initialValues: {
             name: "",
@@ -125,6 +138,37 @@ const Candidate: React.FC = () => {
                                         <p className="text-red-500 text-sm mt-1">{formik.errors.name}</p>
                                     )}
                                 </div>
+                                <div>
+                                    <CountrySelect
+                                        onChange={(e: any) => {
+                                            setCountryid(e.id);
+                                        }}
+                                        placeHolder="Select Country"
+                                        region={region}
+                                    />
+                                </div>
+                                <div>
+                                    <StateSelect
+                                        countryid={countryid}
+                                        onChange={(e: any) => {
+                                            setstateid(e.id);
+                                        }}
+                                        placeHolder="Select State"
+                                    />
+                                </div>
+                                <div>
+                                    <CitySelect
+                                        countryid={countryid}
+                                        stateid={stateid}
+                                        onChange={(e: any) => {
+                                            console.log(e);
+                                        }}
+                                        placeHolder="Select City"
+                                    />
+                                </div>
+
+
+
 
                                 {/* Resume Title Field */}
                                 <div>
@@ -323,7 +367,7 @@ const Candidate: React.FC = () => {
                 <table className="min-w-full border border-gray-200 bg-white rounded-lg">
                     <thead>
                         <tr className="bg-gray-100 border-b border-gray-200">
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 ID
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">

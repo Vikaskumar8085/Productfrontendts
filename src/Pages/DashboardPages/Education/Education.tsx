@@ -29,7 +29,7 @@ const Education = () => {
             ugCourse: "",
             pgCourse: "",
             postPgCourse: "",
-            candidateId: 1
+            candidateId: 5
         },
         onSubmit: async (values) => {
             try {
