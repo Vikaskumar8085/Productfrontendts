@@ -16,7 +16,7 @@ import {
   setupdateclient,
   setdeleteclient,
 } from "../../../Redux/ClientSlice/Clientslice";
-
+import toast from "react-hot-toast";
 interface clienttypes {
   FirstName: string;
   LastName: string;
@@ -27,6 +27,7 @@ interface clienttypes {
   GstNumber: string | number;
   Status: string | boolean;
 }
+
 
 const Client: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,12 +69,14 @@ const Client: React.FC = () => {
           // If editClientId exists, make an edit API call
           response = await editclientapicall(editClientId, values);
           if (response.success) {
+            toast.success(response.message)
             dispatch(setupdateclient(response.result));
           }
         } else {
           // Otherwise, create a new client
           response = await createclietapicall(values);
           if (response.success) {
+            toast.success(response.message)
             dispatch(setaddclient(response.result));
           }
         }
@@ -81,6 +84,7 @@ const Client: React.FC = () => {
         formik.resetForm();
         setEditClientId(null); // Reset edit client ID
       } catch (error) {
+        toast.error("Something went wrong")
         console.error("Error submitting form:", error);
       }
     },
@@ -99,9 +103,11 @@ const Client: React.FC = () => {
     try {
       const response: any = await deleteclientapicall(clientId);
       if (response.success) {
+        toast.success(response.message)
         dispatch(setdeleteclient(clientId));
       }
     } catch (error) {
+      toast.error("Something went wrong")
       console.error("Error deleting client:", error);
     }
   };

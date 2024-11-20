@@ -21,6 +21,7 @@ import { TfiDownload } from "react-icons/tfi";
 import UploadForm from "../../../component/Admin/TagComponent/UploadForm";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import toast from "react-hot-toast";
 
 interface tagTypes {
   Tag_Name: string | any;
@@ -47,6 +48,7 @@ function Tag() {
             value
           );
           if (response.success) {
+            toast.success(response.message)
             dispatch(setupdateTagitems(response.result)); // Update the Redux state
             setIsOpen(false);
           }
@@ -54,13 +56,15 @@ function Tag() {
           // If not in edit mode, create a new tag
           const response: unknown | any = await createtagapicall(value);
           if (response.success) {
+            toast.success(response.message)
             dispatch(setaddItems(response.result)); // Add the new tag to Redux state
             setIsOpen(false);
           }
         }
         formik.resetForm();
       } catch (error: any) {
-        console.log(error?.message);
+          console.log(error?.message);
+        toast.error("Something went wrong")
         setIsOpen(false);
         formik.resetForm();
       }
@@ -95,10 +99,12 @@ function Tag() {
           },
         }
       );
-
+      
       if (!response.ok) {
+        toast.error("Something went wrong")
         throw new Error("Network response was not ok");
       }
+      toast.success("CSV template downloaded successfully");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -124,9 +130,14 @@ function Tag() {
 
   // Handle delete action
   const handleDelete = async (id: number) => {
-    const response: any = await removetagapicall(id);
-    if (response.success) {
-      dispatch(setdeleteTagitems(id)); // Remove the deleted tag from Redux state
+    try {
+      const response: any = await removetagapicall(id);
+      if (response.success) {
+        toast.success(response.message)
+        dispatch(setdeleteTagitems(id)); // Remove the deleted tag from Redux state
+      }
+    } catch (error: any) {
+      toast.error("Something went wrong")
     }
   };
 

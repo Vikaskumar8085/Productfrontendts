@@ -27,7 +27,7 @@ export const fetchcandidatetapicall = async () => {
 // remove candidate api service
 
 export const RemoveCandidateapicall = async (id:number) => {
-  const response: any | null = await apiInstance.delete(`/candidate/remove-candidate/${id}`);
+  const response: any | null = await apiInstance.delete(`/candidate/delete-candidate/${id}`);
   return response.data;
 };
 

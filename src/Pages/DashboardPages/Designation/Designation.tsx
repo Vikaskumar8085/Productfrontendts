@@ -18,11 +18,17 @@ import {
 } from "../../../Redux/DesignationSlice/DesignationSlice";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import toast from "react-hot-toast";
+import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
 interface DesigantionType {
   title: string;
 }
 
 const Designation: React.FC = () => {
+  const [isDialogOpen, setDialogOpen] = React.useState<boolean>(false);
+     
+
+ 
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const [isEdit, setIsEdit] = React.useState<boolean>(false); // state for edit mode
   const [editDesignationId, setEditDesignationId] = React.useState<
@@ -45,6 +51,7 @@ const Designation: React.FC = () => {
             editDesignationId
           ); // update API call
           if (response.success) {
+            toast.success(response.message)
             dispatch(setUpdateDesignations(response.result))
             setOpen(false);
             setIsEdit(false);
@@ -52,12 +59,14 @@ const Designation: React.FC = () => {
         } else {
           const response = await addDesignationapicall(value); // add API call
           if (response.success) {
+            toast.success(response.message)
             dispatch(setAddDesignations(response.result));
             setOpen(false);
           }
         }
         formik.resetForm();
       } catch (error: any) {
+        toast.error("Something went wrong")
         console.log(error?.message);
         setOpen(false);
       }
@@ -80,10 +89,17 @@ const Designation: React.FC = () => {
   }, [0]);
 
   const handleDelete = async (id: number) => {
-    const response = await removedesignationapicall(id);
-    if (response.success) {
-      dispatch(setDeleteDesignations(id))
+    try {
+      const response = await removedesignationapicall(id);
+      if (response.success) {
+        toast.success(response.message)
+        dispatch(setDeleteDesignations(id))
+        setDialogOpen(false)
+      }
+    } catch (error: any) {
+      toast.error("Something went wrong")
     }
+    
   };
 
   const handleEdit = (id: number) => {
@@ -169,8 +185,22 @@ const Designation: React.FC = () => {
                 <td>{item.title}</td>
                 <td>
                   <div className="flex gap-2">
-                    <MdOutlineEdit className="text-blue-500 cursor-pointer text-2xl" onClick={()=>handleEdit(item.id)}/>
-                    <MdDelete className="text-red-500 cursor-pointer text-2xl" onClick={()=>handleDelete(item.id)}/>
+                    <MdOutlineEdit
+                      className="text-blue-500 cursor-pointer text-2xl"
+                      onClick={() => handleEdit(item.id)}
+                    />
+                    <div className="flex items-center justify-center bg-gray-100">
+                      <MdDelete
+                      className="text-red-500 cursor-pointer text-2xl"
+                      onClick={() => setDialogOpen(true)}
+                      />
+                      <DeleteDialog
+                        isOpen={isDialogOpen}
+                        onClose={() => setDialogOpen(false)}
+                        onDelete={() => handleDelete(item.id)}
+                      />
+                    </div>
+                    
                   </div>
                 </td>
               </tr>

@@ -4,12 +4,14 @@ import { TfiDownload } from "react-icons/tfi";
 import Papa from 'papaparse';
 import Layout from '../../../component/Layout/Layout';
 import { csvbulkuploadapicall, csvtemplateapicall } from '../../../Services/Admin/CandidateApiService';
-
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 interface FormValues {
     file: File | null;
 }
 
 const CandidateUpload: React.FC = () => {
+    const navigate = useNavigate()
     const [csvData, setCsvData] = useState<string[][] | null>(null);
     // formik 
     const formik = useFormik<FormValues>({
@@ -31,13 +33,15 @@ const CandidateUpload: React.FC = () => {
                 formdata.append("file", values.file);
                 const response = await csvbulkuploadapicall(formdata);
                 if (response) {
+                    toast.success(response.message)
 
-                    window.location.href = "/candidate"
+                    navigate("/candidate")
                 }
                 resetForm();
                 setCsvData(null); // Clear preview after submission
 
             } catch (error: any) {
+                toast.error("Something went wrong")
                 console.log(error?.message)
             }
         },
@@ -71,8 +75,9 @@ const CandidateUpload: React.FC = () => {
                     'Content-Type': 'text/csv',
                 },
             });
-
+            toast.success("CSV template downloaded successfully")
             if (!response.ok) {
+                toast.error("Something went wrong")
                 throw new Error('Network response was not ok');
             }
             // Convert response to blob

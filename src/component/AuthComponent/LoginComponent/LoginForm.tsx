@@ -3,7 +3,8 @@ import React from 'react';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import { loginapiservice } from '../../../Services/UserApiSerice';
-
+import toast from 'react-hot-toast';    
+import { useNavigate } from 'react-router-dom';
 interface LoginFormValues {
     Email: string;
     Password: string;
@@ -16,6 +17,7 @@ interface LoginFormValues {
 // });
 
 const LoginForm: React.FC = () => {
+    const navigate = useNavigate()
     const formik = useFormik<LoginFormValues>({
         initialValues: {
             Email: '',
@@ -26,9 +28,11 @@ const LoginForm: React.FC = () => {
                 const response: any = await loginapiservice(values);
                 if (response.success) {
                     localStorage.setItem("token", response.result)
-                    window.location.href = "/dashboard"
+                    toast.success(response.message)
+                    navigate("/dashboard")
                 }
             } catch (error: any) {
+                toast.error("Invalid Email or Password")
                 console.log(error?.message)
 
             }
