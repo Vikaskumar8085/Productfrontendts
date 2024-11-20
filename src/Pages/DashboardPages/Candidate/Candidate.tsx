@@ -1,7 +1,8 @@
-import React from 'react'
-import Layout from '../../../component/Layout/Layout'
-import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
-import useState from 'react';
+
+
+import React, {  useState } from 'react';
+import Layout from '../../../component/Layout/Layout';
+import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
 import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import { candidateTypes } from '../../../Services/Admin/CandidateApiService/candidatetypes';
@@ -14,17 +15,25 @@ import {
     RegionSelect,
     PhonecodeSelect
 } from "react-country-state-city";
-
-import useEffect from 'react';
-
+import { fetchdesignationapicall } from '../../../Services/Admin/Designation/index';
+import { setCandidate, setAddCandidates, setUpdateCandidates, setDeleteCandidates } from '../../../Redux/CandidateSlice/CandidateSlice';
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
+//fetch tags
+import { fetchtagapicall } from '../../../Services/Admin/Tagapiservice/tagapiservece';
 const Candidate: React.FC = () => {
-    const [isOpen, setIsOpen] = React.useState<boolean | null>(false)
-    const [isData, setData] = React.useState<[]>([]);
-    const [region, setRegion] = React.useState<any>("");
-    const [phonecode, setPhoneCode] = React.useState<any>("");
-    const [countryid, setCountryid] = React.useState<any>(0);
-    const [stateid, setstateid] = React.useState<any>(0);
-    const formik = useFormik<candidateTypes>({
+    const [isOpen, setIsOpen] = useState<boolean | null>(false);
+    const [isData, setData] = useState<[]>([]);
+    const [tags, setTags] = useState<[]>([]);
+    const [designation, setDesignation] = useState<[]>([]);
+    const [region, setRegion] = useState<any>("");
+    const [phonecode, setPhoneCode] = useState<any>("");
+    const [countryid, setCountryid] = useState<any>(0);
+    const [stateid, setstateid] = useState<any>(0);
+    console.log(stateid, "stateid")
+    const dispatch = useAppDispatch();
+    const candidatevalues = useAppSelector((state) => state.candidate.value);
+
+    const formik = useFormik({
         initialValues: {
             name: "",
             resumeTitle: "",
@@ -37,16 +46,28 @@ const Candidate: React.FC = () => {
             state: "",
             preferredLocation: "",
             dob: "",
-            designation: ""
+            currentEmployeer: "",
+            postalAddress: "",
+            region: "",
+            designationId: 0 as number,
+            tags: [] as any[],
+            education: {
+                ugCourse: "",
+                pgCourse: "",
+                postPgCourse: "",
+            }
         },
         onSubmit: async (values, { resetForm }) => {
-
             try {
+                
+                values.state = stateid.name
+                values.region = countryid.name
+                values.tags = values.tags.map((tag: any) => tag.id)
                 console.log(values, "values >>>>>>>>>>")
                 const response = await addproductapicall(values);
                 console.log(response, "response call")
                 if (response.success) {
-                    fetchcandidatedata()
+                    dispatch(setAddCandidates(response.result))
                     setIsOpen(false)
                     resetForm();
                 }
@@ -54,7 +75,6 @@ const Candidate: React.FC = () => {
                 console.log(error)
                 setIsOpen(false)
                 resetForm();
-
             }
         },
     });
@@ -63,53 +83,78 @@ const Candidate: React.FC = () => {
         try {
             const response = await fetchcandidatetapicall();
             if (response.success) {
-                setData(response.result)
+                dispatch(setCandidate(response.result))
+            }
+        } catch (error: any) {
+            console.log(error?.message)
+        }
+    };
+
+    const candidateTabledata = candidatevalues.map((item: any, index: any) => {
+        
+        return (
+            <tr key={index}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.    name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.contactNumber}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.whatsappNumber}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.resumeTitle}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.workExp}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.currentCTC}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.currentLocation}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.state}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.preferredLocation}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.dob}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.designation.title}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.currentEmployeer}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.postalAddress}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.region}</td>
+                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>{item.education.ugCourse}</td>
+                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>{item.education.pgCourse}</td>
+                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-700'>{item.education.postPgCourse}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {item.education && item.education.length > 0 ? item.education.map((edu: any, idx: number) => (
+                        <div key={idx}>
+                            {edu.ugCourse} | {edu.pgCourse} | {edu.postPgCourse}
+                        </div>
+                    )) : null}
+                </td>
+            </tr>
+        )
+    });
+
+    React.useEffect(() => {
+        fetchcandidatedata();
+    }, [0]);
+
+    const fetchdesignations = async () => {
+        try {
+            const response = await fetchdesignationapicall();
+            if (response.success) {
+                setDesignation(response.result)
+            }
+        } catch (error: any) {
+            console.log(error?.message)
+        }
+    };
+
+    React.useEffect(() => {
+        fetchdesignations();
+    }, [0]);
+    const fetchtags = async () => {
+        try {
+            const response:any = await fetchtagapicall();
+            if (response.success) {
+                setTags(response.result)
             }
         } catch (error: any) {
             console.log(error?.message)
         }
     }
-
-    const candidateTabledata = isData.map((item, index) => {
-        const { name,
-            resumeTitle,
-            contactNumber,
-            whatsappNumber,
-            email,
-            workExp,
-            currentCTC,
-            currentLocation,
-            state,
-            preferredLocation,
-            dob,
-            designation } = item;
-
-        return (
-            <>
-                <tr>
-                    <td key={index} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{name} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{email} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{contactNumber} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{whatsappNumber} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{resumeTitle} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{workExp} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{currentCTC} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{currentLocation} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{state} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{preferredLocation} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{dob} </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{designation} </td>
-                </tr>
-
-            </>
-        )
-    })
-
-
     React.useEffect(() => {
-        fetchcandidatedata()
-    }, [0])
+        fetchtags();
+    }, [0]);
 
     return (
         <Layout>
@@ -120,7 +165,7 @@ const Candidate: React.FC = () => {
                 </button>
                 {/* model */}
                 {isOpen && <Modal setOpen={setIsOpen}>
-                    <div className='form'>
+                    <div className='form overflow-y-auto max-h-[500px]'>
                         <form onSubmit={formik.handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 {/* Name Field */}
@@ -141,7 +186,7 @@ const Candidate: React.FC = () => {
                                 <div>
                                     <CountrySelect
                                         onChange={(e: any) => {
-                                            setCountryid(e.id);
+                                            setCountryid(e);
                                         }}
                                         placeHolder="Select Country"
                                         region={region}
@@ -149,23 +194,14 @@ const Candidate: React.FC = () => {
                                 </div>
                                 <div>
                                     <StateSelect
-                                        countryid={countryid}
+                                        countryid={countryid.id}
                                         onChange={(e: any) => {
-                                            setstateid(e.id);
+                                            setstateid(e);
                                         }}
                                         placeHolder="Select State"
                                     />
                                 </div>
-                                <div>
-                                    <CitySelect
-                                        countryid={countryid}
-                                        stateid={stateid}
-                                        onChange={(e: any) => {
-                                            console.log(e);
-                                        }}
-                                        placeHolder="Select City"
-                                    />
-                                </div>
+                               
 
 
 
@@ -282,21 +318,7 @@ const Candidate: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* State Field */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">State</label>
-                                    <input
-                                        type="text"
-                                        name="state"
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        value={formik.values.state}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    />
-                                    {formik.touched.state && formik.errors.state && (
-                                        <p className="text-red-500 text-sm mt-1">{formik.errors.state}</p>
-                                    )}
-                                </div>
+                               
 
                                 {/* Preferred Location Field */}
                                 <div>
@@ -316,16 +338,23 @@ const Candidate: React.FC = () => {
                                 {/* designation */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Designation</label>
-                                    <input
-                                        type="text"
-                                        name="designation"
+                                   
+                                    <select
+                                        name="designationId"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        value={formik.values.designation}
+                                        value={formik.values.designationId}
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    />
-                                    {formik.touched.preferredLocation && formik.errors.preferredLocation && (
-                                        <p className="text-red-500 text-sm mt-1">{formik.errors.preferredLocation}</p>
+                                    >
+                                        <option value=''>--select--</option>
+                                        {designation.map((item: any, index: any) => {
+                                            return (
+                                                <option key={index} value={item.id}>{item.title}</option>
+                                            )
+                                        })}
+                                    </select>
+                                    {formik.touched.designationId && formik.errors.designationId && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.designationId}</p>
                                     )}
                                 </div>
                                 {/* Date of Birth Field */}
@@ -343,6 +372,66 @@ const Candidate: React.FC = () => {
                                         <p className="text-red-500 text-sm mt-1">{formik.errors.dob}</p>
                                     )}
                                 </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>Current Employeer</label>
+                                    <input 
+                                    type='text'
+                                    name='currentEmployeer'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.currentEmployeer}
+                                    className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                    />
+                                    {formik.touched.currentEmployeer && formik.errors.currentEmployeer && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.currentEmployeer}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>Postal Address</label>
+                                    <input
+                                    type='text'
+                                    name='postalAddress'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.postalAddress}
+                                    className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                                    />
+                                    {formik.touched.postalAddress && formik.errors.postalAddress && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.postalAddress}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>Tags</label>
+                                    <select name='tags' multiple>
+                                        {tags.map((item: any, index: any) => {
+                                            return <option key={index} value={item.id}>{item.Tag_Name}</option>
+                                        })}
+                                    </select>
+                                    
+                                </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>UG Course</label>
+                                  
+                                    <input type='text' name='education.ugCourse' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.education.ugCourse} className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm' />
+                                    {formik.touched.education?.ugCourse && formik.errors.education?.ugCourse && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.education.ugCourse}</p>
+                                    )}
+
+                                    
+                                      
+                                </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>PG Course</label>
+                                    <input type='text' name='education.pgCourse' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.education.pgCourse} className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm' />
+                                    {formik.touched.education?.pgCourse && formik.errors.education?.pgCourse && (
+                                        <p className="text-red-500 text-sm mt-1">{formik.errors.education.pgCourse}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className='block text-sm font-medium text-gray-700'>Post PG Course</label>
+                                    <input type='text' name='education.postPgCourse' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.education.postPgCourse} className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm' />
+                                </div>  
+                                  
                             </div>
 
                             <button
@@ -403,6 +492,27 @@ const Candidate: React.FC = () => {
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 dob
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                designation
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                current Employeer
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                postal Address
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                region
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                UG Course
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                PG Course
+                            </th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Post PG Course
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 Actions

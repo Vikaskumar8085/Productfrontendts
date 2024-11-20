@@ -1,135 +1,185 @@
-import React from 'react';
-import Layout from '../../../component/Layout/Layout';
-import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
-import Modal from '../../../Common/Modal/Modal';
-import { useFormik } from 'formik';
-import { addDesignationapicall, fetchdesignationapicall } from '../../../Services/Admin/Designation';
-import useEffect from 'react';
-
-
+import React from "react";
+import Layout from "../../../component/Layout/Layout";
+import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
+import Modal from "../../../Common/Modal/Modal";
+import { useFormik } from "formik";
+import {
+  addDesignationapicall,
+  fetchdesignationapicall,
+  removedesignationapicall,
+  updatedesignationapicall,
+} from "../../../Services/Admin/Designation";
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
+import {
+  setAddDesignations,
+  setDesignation,
+  setDeleteDesignations,
+  setUpdateDesignations
+} from "../../../Redux/DesignationSlice/DesignationSlice";
+import { MdOutlineEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 interface DesigantionType {
-    title: string
+  title: string;
 }
+
 const Designation: React.FC = () => {
-    const [isOpen, setOpen] = React.useState<boolean>(false);
-    const [isdata, setData] = React.useState<[]>([]);
+  const [isOpen, setOpen] = React.useState<boolean>(false);
+  const [isEdit, setIsEdit] = React.useState<boolean>(false); // state for edit mode
+  const [editDesignationId, setEditDesignationId] = React.useState<
+    number | null
+  >(null); // state for editing designation
+  const designationfetch = useAppSelector(
+    (state: any) => state.designation.value
+  );
+  const dispatch = useAppDispatch();
 
-
-    const formik = useFormik<DesigantionType>({
-        initialValues: {
-            title: ''
-        },
-        onSubmit: async (value) => {
-            try {
-                const response = await addDesignationapicall(value)
-                if (response) {
-                    console.log(response)
-                    setOpen(false)
-                    fetchdesignation()
-                }
-                setOpen(false)
-                formik.resetForm()
-            } catch (error: any) {
-                setOpen(false)
-                console.log(error?.message)
-
-            }
+  const formik = useFormik<DesigantionType>({
+    initialValues: {
+      title: "",
+    },
+    onSubmit: async (value) => {
+      try {
+        if (isEdit && editDesignationId) {
+          const response = await updatedesignationapicall(
+            value,
+            editDesignationId
+          ); // update API call
+          if (response.success) {
+            dispatch(setUpdateDesignations(response.result))
+            setOpen(false);
+            setIsEdit(false);
+          }
+        } else {
+          const response = await addDesignationapicall(value); // add API call
+          if (response.success) {
+            dispatch(setAddDesignations(response.result));
+            setOpen(false);
+          }
         }
-    })
+        formik.resetForm();
+      } catch (error: any) {
+        console.log(error?.message);
+        setOpen(false);
+      }
+    },
+  });
 
-
-    const fetchdesignation = async () => {
-        try {
-            const response = await fetchdesignationapicall();
-            if (response.success) {
-                setData(response.result)
-            }
-        } catch (error: any) {
-            console.log(error?.message, "error message")
-        }
+  const fetchdesignation = async () => {
+    try {
+      const response = await fetchdesignationapicall();
+      if (response.success) {
+        dispatch(setDesignation(response.result));
+      }
+    } catch (error: any) {
+      console.log(error?.message, "error message");
     }
+  };
 
-    React.useEffect(() => {
-        fetchdesignation();
-    }, [0])
-    return (
-        <Layout>
-            <Breadcrumb pageName="Designation" />
-            <div className="designation_header mb-2">
-                <button
-                    onClick={() => setOpen(true)}
-                    className="px-4 py-2 bg-yellow-400 border capitalize"
-                >                    Add Designation
-                </button>
-            </div>
-            {isOpen && (
-                <Modal setOpen={setOpen}>
-                    <div className='w-[300px] md:w-[300px]'>
-                        <form onSubmit={formik.handleSubmit}>
-                            <div className="flex flex-col mb-4">
-                                <label className="mb-2 text-gray-700 font-medium text-lg" htmlFor="designation">
-                                    Add Designation
-                                </label>
-                                <input
-                                    type="text"
-                                    {...formik.getFieldProps("title")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                    name="title"
-                                    id="title"
-                                />
-                            </div>
-                            <div className="flex">
-                                <button
-                                    type="submit"
-                                    className="w-full bg-blue-500 text-white text-sm font-semibold uppercase py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                >   Submit
-                                </button>
-                            </div>
+  React.useEffect(() => {
+    fetchdesignation();
+  }, [0]);
 
-                        </form>
-                    </div>
+  const handleDelete = async (id: number) => {
+    const response = await removedesignationapicall(id);
+    if (response.success) {
+      dispatch(setDeleteDesignations(id))
+    }
+  };
 
-                </Modal>
-            )}
-
-
-            <div className="overflow-x-auto">
-                <table className="min-w-full border border-gray-200 bg-white rounded-lg">
-                    <thead>
-                        <tr className="bg-gray-100 border-b border-gray-200">
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                ID
-                            </th>    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Title
-                            </th>    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Actions
-                            </th>
-
-
-
-                        </tr>
-                    </thead>
-
-                    {isdata?.map((item, index) => {
-                        const { title } = item;
-                        return (
-                            <tbody>
-                                <tr className="border-b last:border-none hover:bg-gray-50">
-                                    <td key={index} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{title}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        )
-                    })}
-
-                </table>
-            </div>
-
-        </Layout>
+  const handleEdit = (id: number) => {
+    const designationToEdit = designationfetch.find(
+      (item: any) => item.id === id
     );
+    if (designationToEdit) {
+      formik.setValues({ title: designationToEdit.title });
+      setEditDesignationId(id);
+      setIsEdit(true);
+      setOpen(true);
+      console.log(designationToEdit,"designationToEdit")
+    }
+  };
+
+  return (
+    <Layout>
+      <Breadcrumb pageName="Designation" />
+      <div className="designation_header mb-2">
+        <button
+          onClick={() => {
+            setOpen(true);
+            setIsEdit(false); // Reset to add mode when opening modal
+          }}
+          className="px-4 py-2 bg-yellow-400 border capitalize"
+        >
+          Add Designation
+        </button>
+      </div>
+
+      {isOpen && (
+        <Modal setOpen={setOpen}>
+          <div className="w-[300px] md:w-[300px]">
+            <form onSubmit={formik.handleSubmit}>
+              <div className="flex flex-col mb-4">
+                <label
+                  className="mb-2 text-gray-700 font-medium text-lg"
+                  htmlFor="designation"
+                >
+                  {isEdit ? "Edit Designation" : "Add Designation"}
+                </label>
+                <input
+                  type="text"
+                  {...formik.getFieldProps("title")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  name="title"
+                  id="title"
+                />
+              </div>
+              <div className="flex">
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white text-sm font-semibold uppercase py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  {isEdit ? "Update" : "Submit"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </Modal>
+      )}
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full border border-gray-200 bg-white rounded-lg">
+          <thead>
+            <tr className="bg-gray-100 border-b border-gray-200">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Title
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {designationfetch?.map((item: any, index: number) => (
+              <tr key={item.id}>
+                <td>{index + 1}</td>
+                <td>{item.title}</td>
+                <td>
+                  <div className="flex gap-2">
+                    <MdOutlineEdit className="text-blue-500 cursor-pointer text-2xl" onClick={()=>handleEdit(item.id)}/>
+                    <MdDelete className="text-red-500 cursor-pointer text-2xl" onClick={()=>handleDelete(item.id)}/>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Layout>
+  );
 };
 
 export default Designation;

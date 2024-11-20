@@ -1,6 +1,10 @@
 import { FormikErrors, FormikHelpers, useFormik } from 'formik'
 import Papa from 'papaparse';
 import React, { useState } from 'react'
+import { uploadcsvapicall } from '../../../Services/Admin/Tagapiservice/tagapiservece';
+import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
+import { setTagitems, setaddItems } from '../../../Redux/TagSlice/Tagslice';
+
 interface FormValues {
     file: File | null;
 }
@@ -8,6 +12,8 @@ interface FormValues {
 function UploadForm() {
 
     const [csvData, setCsvData] = useState<string[][] | null>(null);
+    const dispatch = useAppDispatch();
+    const tagvalue = useAppSelector((state) => state.tag.value);
     // formik 
     const formik = useFormik<FormValues>({
         initialValues: {
@@ -26,14 +32,11 @@ function UploadForm() {
             try {
                 const formdata: any | null = new FormData();
                 formdata.append("file", values.file);
-                // const response = await csvbulkuploadapicall(formdata);
-                // if (response) {
-
-                //     window.location.href = "/candidate"
-                // }
-                resetForm();
-                setCsvData(null); // Clear preview after submission
-
+                const response: any = await uploadcsvapicall(formdata);
+                if (response.success) {
+                    dispatch(setaddItems(response.result));
+                }
+                window.location.href = "/tag"
             } catch (error: any) {
                 console.log(error?.message)
             }
@@ -88,7 +91,7 @@ function UploadForm() {
 
             {/* Preview CSV Data */}
             {csvData && (
-                <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6">
+                <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6 overflow-y-auto max-h-[500px]">
                     <h2 className="text-lg font-semibold mb-4">CSV Preview</h2>
                     <table className="table-auto w-full border-collapse">
                         <thead>

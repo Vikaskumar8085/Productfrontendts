@@ -13,3 +13,15 @@ export const fetchclientapicall = async () => {
   const response = await apiInstance.get("/client/fetch-client");
   return response.data;
 };
+
+export const editclientapicall = async (id:any,data:any) => {
+  const response = await apiInstance.put(`/client/edit-client/${id}`,data);
+  return response.data;
+};
+
+// delete client
+
+export const deleteclientapicall = async (id:any) => {
+  const response = await apiInstance.delete(`/client/remove-client/${id}`);
+  return response.data;
+};
