@@ -4,7 +4,7 @@ import Modal from '../../../Common/Modal/Modal';
 import { useFormik } from 'formik';
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
-import { fetchclientapicall } from '../../../Services/Admin/Clientapiservice';
+import { createclietapicall, fetchclientapicall } from '../../../Services/Admin/Clientapiservice';
 import { setclient } from '../../../Redux/ClientSlice/Clientslice';
 
 interface clienttypes {
@@ -24,12 +24,7 @@ const Client: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
     const clientvalues = useAppSelector((state) => state.client.values)
 
-
-
     const dispatch = useAppDispatch();
-
-
-
     const formik = useFormik<clienttypes>({
         initialValues: {
             FirstName: "",
@@ -42,11 +37,14 @@ const Client: React.FC = () => {
             Status: "",
 
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             try {
-                console.log(values, "values")
+                const response = await createclietapicall(values);
 
-                formik.resetForm()
+                if (response.success) {
+                    fetchclients();
+                    formik.resetForm()
+                }
 
             } catch (error: any) {
                 console.log(error?.message)
@@ -59,6 +57,7 @@ const Client: React.FC = () => {
     const fetchclients = async () => {
         try {
             const response: unknown | any = await fetchclientapicall();
+
             if (response.success) {
                 dispatch(setclient(response.result))
             }

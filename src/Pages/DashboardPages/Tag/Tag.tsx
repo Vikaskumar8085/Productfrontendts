@@ -6,12 +6,15 @@ import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
 import { createtagapicall, fetchtagapicall } from '../../../Services/Admin/Tagapiservice/tagapiservece';
 import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
 import { setaddItems, setTagitems } from '../../../Redux/TagSlice/Tagslice';
+import { TfiDownload } from 'react-icons/tfi';
+import UploadForm from '../../../component/Admin/TagComponent/UploadForm';
 
 interface tagTypes {
     Tag_Name: string | any;
 }
 function Tag() {
     const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
+    const [ismodelOpen, setIsModelOpen] = React.useState<Boolean | null>(false);
     const dispatch = useAppDispatch();
     const tagvalue = useAppSelector(state => state.tag.value);
 
@@ -61,6 +64,45 @@ function Tag() {
 
 
 
+
+    // tag csv template
+
+
+    const csvtemplate = async () => {
+        try {
+            // Fetch the CSV template from your API
+            const response = await fetch('http://localhost:8000/api/tag/download-tag-template', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/csv',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // Convert response to blob
+            const blob = await response.blob();
+
+            // Create a link and trigger download
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Tag-template.csv'; // Set the desired file name
+            link.click();
+
+            // Clean up
+            window.URL.revokeObjectURL(url);
+        } catch (error: any) {
+            console.error('Error downloading the template:', error);
+        }
+    }
+
+    // tag csv template
+
+
+
+
     const tagsTable = tagvalue.map((item, index) => {
 
         const { id, Tag_Name } = item
@@ -71,7 +113,7 @@ function Tag() {
                     <td className="px-4 py-2" key={index}>{index + 1}</td>
                     <td className="px-4 py-2" >{Tag_Name}</td>
                     <td className="px-4 py-2" >
-                        <button onClick={()=>console.log(id)} value={id}>delete</button></td>
+                        <button onClick={() => console.log(id)} value={id}>delete</button></td>
 
                 </tr>
 
@@ -84,14 +126,20 @@ function Tag() {
 
 
 
+
+
     return (
         <Layout>
             <Breadcrumb pageName='Tag' />
 
-            <section className='p-4 bg-gray-300 w-full relative block overflow-x-hidden mb-3'>
+            <section className='p-4 bg-gray-300 w-full flex gap-4 flex-row relative block overflow-x-hidden mb-3'>
                 <button className='bg-white px-4 py-2 b rounded-md' onClick={() => setIsOpen(true)}> Add Tag</button>
+                <button onClick={csvtemplate} className='bg-white flex rounded-md justify-center items-center border rounded-md text-black-100  font-lighter text-md px-4 py-2 ' >
+                    <i className='mx-3'><TfiDownload /></i>
+                    Csv Formate</button>
+                <button className='bg-white px-4 py-2 rounded-md text-1xl capitalize' onClick={() => setIsModelOpen(true)}>upload csv</button>
             </section>
-
+            {/* form modal for tag */}
             {isOpen && <Modal setOpen={setIsOpen}>
                 <div className="form">
 
@@ -118,6 +166,11 @@ function Tag() {
                     </form>
                 </div>
             </Modal>}
+            {/* form modal for tag */}
+
+            {ismodelOpen && <Modal setOpen={setIsModelOpen}>
+                <UploadForm /></Modal>}
+
             {/* table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full border border-gray-200 bg-white rounded-lg">

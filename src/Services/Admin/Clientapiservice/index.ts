@@ -3,7 +3,7 @@ import apiInstance from "../../apiservice/apiInstance";
 // create client
 
 export const createclietapicall = async (data: any) => {
-  const response = await apiInstance.post<any>("/api/", data);
+  const response = await apiInstance.post<any>("/client/create-client", data);
   return response.data;
 };
 

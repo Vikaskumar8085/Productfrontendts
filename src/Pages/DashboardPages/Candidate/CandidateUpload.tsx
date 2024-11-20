@@ -75,7 +75,6 @@ const CandidateUpload: React.FC = () => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-
             // Convert response to blob
             const blob = await response.blob();
 
