@@ -12,12 +12,12 @@ export const fetchregionapicall = async () => {
 };
 
 // remove region  api call
-export const removeregionapicall = async () => {
-  const response = await apiInstance.delete("");
+export const removeregionapicall = async (id:number) => {
+  const response = await apiInstance.delete(`/region/remove-region/${id}`);
   return response.data;
 };
 // edit region api call
-export const editregionapicall = async () => {
-  const response = await apiInstance.put("");
+export const editregionapicall = async (id:number,value:any) => {
+  const response = await apiInstance.put(`/region/update-region/${id}`,value);
   return response.data;
 };

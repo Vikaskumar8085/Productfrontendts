@@ -12,6 +12,9 @@ export interface candidateTypes {
   preferredLocation: string;
   dob: string;
   designation: string;
+  currentEmployeer: string;
+  postalAddress: string;
+  region: string;
 }
 
 // fetch product interface

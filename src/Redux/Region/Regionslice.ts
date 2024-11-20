@@ -18,9 +18,15 @@ const Regionslice = createSlice({
     setaddRegionitems: (state, action: PayloadAction<any>) => {
       state.value.push(action.payload);
     },
+    setdeleteRegionitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.filter((item:any) => item.id !== action.payload);
+    },
+    setupdateRegionitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.map((item:any) => item.id === action.payload.id ? action.payload : item);
+    }
   },
 });
 
-export const {setRegionitems, setaddRegionitems} = Regionslice.actions;
+export const {setRegionitems, setaddRegionitems, setdeleteRegionitems, setupdateRegionitems} = Regionslice.actions;
 
 export default Regionslice.reducer;

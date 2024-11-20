@@ -18,8 +18,14 @@ const reasonSlice = createSlice({
     setaddreasonitems: (state, action: PayloadAction<any>) => {
       state.value.push(action.payload);
     },
+    setdeletereasonitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.filter((item:any) => item.id !== action.payload);
+    },
+    setupdatereasonitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.map((item:any) => item.id === action.payload.id ? action.payload : item);
+    }
   },
 });
 
-export const {setreasonitems, setaddreasonitems} = reasonSlice.actions;
+export const {setreasonitems, setaddreasonitems, setdeletereasonitems, setupdatereasonitems} = reasonSlice.actions;
 export default reasonSlice.reducer;

@@ -15,13 +15,13 @@ export const fetchreasionapicall = async () => {
 
 // remove reasion api call
 
-export const removereasionapicall = async () => {
-  const response: any | null = await apiInstance.delete("/reason/delete-reason");
+export const removereasionapicall = async (id:number) => {
+  const response: any | null = await apiInstance.delete(`/reason/delete-reason/${id}`);
   return response.data;
 };
 
 // update reasion api call
-export const updatereasionapicall = async () => {
-  const response: any | null = await apiInstance.put("/reason/update-reason");
+export const updatereasionapicall = async (value:any,id:number) => {
+  const response: any | null = await apiInstance.put(`/reason/update-reason/${id}`,value);
   return response.data;
 };

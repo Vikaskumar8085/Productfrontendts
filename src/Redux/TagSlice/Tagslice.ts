@@ -18,9 +18,15 @@ const Tagslice = createSlice({
     setaddItems: (state, action: PayloadAction<any>) => {
       state.value.push(action.payload);
     },
+    setdeleteTagitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.filter((item:any) => item.id !== action.payload);
+    },
+    setupdateTagitems: (state, action: PayloadAction<any>) => {
+      state.value = state.value.map((item:any) => item.id === action.payload.id ? action.payload : item);
+    }
   },
 });
 
-export const {setTagitems, setaddItems} = Tagslice.actions;
+export const {setTagitems, setaddItems, setdeleteTagitems, setupdateTagitems} = Tagslice.actions;
 
 export default Tagslice.reducer;

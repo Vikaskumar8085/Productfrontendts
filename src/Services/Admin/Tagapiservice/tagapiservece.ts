@@ -14,14 +14,20 @@ export const fetchtagapicall = async () => {
 };
 
 // remove tag api call
-export const removetagapicall = async () => {
-  const response = await apiInstance.delete("");
+export const removetagapicall = async (id:number) => {
+  const response = await apiInstance.delete(`/tag/remove-tag/${id}`);
   return response.data;
 };
 
 // update tag api call
 
-export const updatetagapicall = async () => {
-  const response = await apiInstance.put("");
+export const updatetagapicall = async (id:number,value:any) => {
+  const response = await apiInstance.put(`/tag/update-tag/${id}`,value);
+  return response.data;
+};
+
+// upload csv api call
+export const uploadcsvapicall = async (data:any) => {
+  const response = await apiInstance.post("/tag/import-tags",data);
   return response.data;
 };
