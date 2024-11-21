@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { uploadcsvapicall } from '../../../Services/Admin/Tagapiservice/tagapiservece';
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
 import { setTagitems, setaddItems } from '../../../Redux/TagSlice/Tagslice';
-
+import toast from "react-hot-toast";
 interface FormValues {
     file: File | null;
 }
@@ -34,6 +34,7 @@ function UploadForm() {
                 formdata.append("file", values.file);
                 const response: any = await uploadcsvapicall(formdata);
                 if (response.success) {
+                    toast.success(response.message)
                     dispatch(setaddItems(response.result));
                 }
                 window.location.href = "/tag"

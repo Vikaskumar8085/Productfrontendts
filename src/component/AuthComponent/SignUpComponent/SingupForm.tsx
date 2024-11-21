@@ -1,7 +1,8 @@
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
 import { registerapiservice } from '../../../Services/UserApiSerice';
-
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
     FirstName: string;
@@ -12,7 +13,7 @@ interface FormValues {
 }
 
 const SingupForm: React.FC = () => {
-
+    const navigate = useNavigate()
     const formik = useFormik<FormValues>({
         initialValues: {
             FirstName: '',
@@ -26,9 +27,11 @@ const SingupForm: React.FC = () => {
                 const response: any = await registerapiservice(values);
                 console.log(response)
                 if (response.success) {
-                    alert("user registration complete successfully")
+                    toast.success(response.message)
+                    navigate("/login")
                 }
             } catch (error: any) {
+                toast.error("Registration failed. Please try again.")
                 console.error('Registration failed:', error);
                 // Handle error (e.g., display error message)
                 setErrors({ Email: 'Registration failed. Please try again.' }); // Example error message

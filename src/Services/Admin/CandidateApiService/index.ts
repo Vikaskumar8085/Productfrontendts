@@ -27,14 +27,14 @@ export const fetchcandidatetapicall = async () => {
 // remove candidate api service
 
 export const RemoveCandidateapicall = async (id:number) => {
-  const response: any | null = await apiInstance.delete(`/candidate/remove-candidate/${id}`);
+  const response: any | null = await apiInstance.delete(`/candidate/delete-candidate/${id}`);
   return response.data;
 };
 
 // edit candidate api service
 
 export const updatecandidateapicall = async (id:number,data:any) => {
-  const response: any | null = await apiInstance.put(`/candidate/edit-candidate/${id}`,data);
+  const response: any | null = await apiInstance.put(`/candidate/update-candidate/${id}`,data);
   return response.data;
 };
 

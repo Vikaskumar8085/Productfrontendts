@@ -4,12 +4,14 @@ import { TfiDownload } from "react-icons/tfi";
 import Papa from 'papaparse';
 import Layout from '../../../component/Layout/Layout';
 import { csvbulkuploadapicall, csvtemplateapicall } from '../../../Services/Admin/CandidateApiService';
-
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 interface FormValues {
     file: File | null;
 }
 
 const CandidateUpload: React.FC = () => {
+    const navigate = useNavigate()
     const [csvData, setCsvData] = useState<string[][] | null>(null);
     // formik 
     const formik = useFormik<FormValues>({
@@ -30,15 +32,26 @@ const CandidateUpload: React.FC = () => {
                 const formdata: any | null = new FormData();
                 formdata.append("file", values.file);
                 const response = await csvbulkuploadapicall(formdata);
-                if (response) {
-
-                    window.location.href = "/candidate"
+                if (response.success) {
+                    toast.success(response.message)
+                    
+                    navigate("/candidate")
                 }
+                
                 resetForm();
                 setCsvData(null); // Clear preview after submission
 
             } catch (error: any) {
-                console.log(error?.message)
+                if (error.response?.data?.errors) {
+                   
+                    for (const key in error.response.data.errors) {
+                        toast.error(error.response.data.errors[key])
+                    }
+                  
+                } else {
+                  toast.error("Something went wrong");
+                  console.log(error?.message);
+                }
             }
         },
     });
@@ -71,8 +84,9 @@ const CandidateUpload: React.FC = () => {
                     'Content-Type': 'text/csv',
                 },
             });
-
+            toast.success("CSV template downloaded successfully")
             if (!response.ok) {
+                toast.error("Something went wrong")
                 throw new Error('Network response was not ok');
             }
             // Convert response to blob
@@ -131,7 +145,7 @@ const CandidateUpload: React.FC = () => {
 
                 {/* Preview CSV Data */}
                 {csvData && (
-                    <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6">
+                    <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6 max-h-[80vh] max-w-full">
                         <h2 className="text-lg font-semibold mb-4">CSV Preview</h2>
                         <table className="table-auto w-full border-collapse">
                             <thead>
