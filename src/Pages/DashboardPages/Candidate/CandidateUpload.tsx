@@ -32,17 +32,26 @@ const CandidateUpload: React.FC = () => {
                 const formdata: any | null = new FormData();
                 formdata.append("file", values.file);
                 const response = await csvbulkuploadapicall(formdata);
-                if (response) {
+                if (response.success) {
                     toast.success(response.message)
-
+                    
                     navigate("/candidate")
                 }
+                
                 resetForm();
                 setCsvData(null); // Clear preview after submission
 
             } catch (error: any) {
-                toast.error("Something went wrong")
-                console.log(error?.message)
+                if (error.response?.data?.errors) {
+                   
+                    for (const key in error.response.data.errors) {
+                        toast.error(error.response.data.errors[key])
+                    }
+                  
+                } else {
+                  toast.error("Something went wrong");
+                  console.log(error?.message);
+                }
             }
         },
     });
@@ -136,7 +145,7 @@ const CandidateUpload: React.FC = () => {
 
                 {/* Preview CSV Data */}
                 {csvData && (
-                    <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6">
+                    <div className="w-full max-w-3xl overflow-auto bg-white shadow-lg rounded-lg p-6 max-h-[80vh] max-w-full">
                         <h2 className="text-lg font-semibold mb-4">CSV Preview</h2>
                         <table className="table-auto w-full border-collapse">
                             <thead>

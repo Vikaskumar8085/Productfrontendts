@@ -34,7 +34,7 @@ export const RemoveCandidateapicall = async (id:number) => {
 // edit candidate api service
 
 export const updatecandidateapicall = async (id:number,data:any) => {
-  const response: any | null = await apiInstance.put(`/candidate/edit-candidate/${id}`,data);
+  const response: any | null = await apiInstance.put(`/candidate/update-candidate/${id}`,data);
   return response.data;
 };
 
