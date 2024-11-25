@@ -3,7 +3,9 @@ import Layout from '../../../component/Layout/Layout'
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb';
 
 const Profile: React.FC = () => {
-    const url: string | null = "https://www.shutterstock.com/image-photo/portrait-young-investor-banker-workplace-260nw-2364566447.jpg";
+    const url: string | null = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"
+    ;
+   
     return (
         <>
             <Layout>

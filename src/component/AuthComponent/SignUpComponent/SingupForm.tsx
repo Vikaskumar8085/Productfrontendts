@@ -2,7 +2,7 @@ import { useFormik } from 'formik';
 import React, { useState } from 'react';
 import { registerapiservice } from '../../../Services/UserApiSerice';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface FormValues {
     FirstName: string;
@@ -121,7 +121,11 @@ const SingupForm: React.FC = () => {
                             Submit
                         </button>
                     </form>
+                    <div className="text-center mt-4 text-gray-800">
+                    <Link to="/login" className="block mt-4 text-sm text-blue-600 hover:underline">Already have an account</Link>
                 </div>
+                </div>
+                
             </div>
         </>
     )

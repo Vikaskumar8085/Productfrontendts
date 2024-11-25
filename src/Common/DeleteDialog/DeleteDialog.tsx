@@ -15,13 +15,15 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 flex-col">
+        <div className="bg-white rounded-lg shadow-lg p-6 relative block overflow-hidden">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Confirm Deletion
           </h2>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to delete this item? This action cannot be
+          <p className="text-gray-600 mb-6 text-wrap">
+            Are you sure you want to delete this item? 
+        
+            This action cannot be
             undone.
           </p>
           <div className="flex justify-end space-x-4">
