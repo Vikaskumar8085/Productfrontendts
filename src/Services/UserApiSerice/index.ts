@@ -15,3 +15,11 @@ export const forgetpasswordapicall = async (data: forgetPassword) => {
   const response = await apiInstance.post("/user/forget-password", data);
   return response.data;
 };
+export const profileapicall = async () => {
+  const response = await apiInstance.get("/user/profile");
+  return response.data;
+}
+export const updateprofileapicall = async (data: any) => {
+  const response = await apiInstance.put("/user/update-profile", data);
+  return response.data;
+}

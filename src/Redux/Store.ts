@@ -7,6 +7,7 @@ import Regionslice from "./Region/Regionslice";
 import reasonSlice from "./ReasonSlice/reasonSlice";
 import Educationslice from "./EducationSlice/Educationslice";
 import DesignationSlice from "./DesignationSlice/DesignationSlice";
+import ProfileSlice from "./ProfileSlice/index";
 export const store = configureStore({
   reducer: {
     user: UserSlice,
@@ -17,6 +18,7 @@ export const store = configureStore({
     reason: reasonSlice,
     education: Educationslice,
     designation: DesignationSlice,
+    profile: ProfileSlice,
     
   },
 });

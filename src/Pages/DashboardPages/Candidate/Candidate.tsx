@@ -29,9 +29,17 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
 import toast from "react-hot-toast";
 import { fetchtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
-
+import { MdDelete, MdEdit } from "react-icons/md";
+import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
+import {fetchdegreebynamesapicall,fetchdegreeapicall} from "../../../Services/Admin/DegreeProgram/index"
+import Select from 'react-select'
 const Candidate: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
+  const [ugdegree, setUgdegree] = useState<[]>([]);
+  const [pgdegree, setPgdegree] = useState<[]>([]);
+  const [postpgdegree, setPostpgdegree] = useState<[]>([]);
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean | null>(false);
   const [tags, setTags] = useState<[]>([]);
@@ -42,7 +50,10 @@ const Candidate: React.FC = () => {
   const [cityid, setCityid] = useState<any>(0);
   const dispatch = useAppDispatch();
   const candidatevalues = useAppSelector((state) => state.candidate.value);
-
+  interface DesignationType {
+    id: number;
+    title: string;
+  }
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -106,7 +117,14 @@ const Candidate: React.FC = () => {
       }
     },
   });
-
+const resetForm = () => {
+  formik.resetForm();
+  setEditMode(false);
+  setSelectedCandidate(null);
+  setCountryid(0);
+  setstateid(0);
+  setCityid(0);
+};
   const fetchcandidatedata = async () => {
     try {
       const response = await fetchcandidatetapicall();
@@ -122,6 +140,7 @@ const Candidate: React.FC = () => {
     try {
       const response = await RemoveCandidateapicall(id);
       if (response.success) {
+        setDialogOpen(false);
         toast.success(response.message);
         dispatch(setDeleteCandidates(id));
       }
@@ -195,6 +214,28 @@ const Candidate: React.FC = () => {
     let age = today.getFullYear() - birthDate.getFullYear();
     return age;
   };
+  const fetchdegree = async () => {
+    const response:any = await fetchdegreeapicall();
+    if (response.success) {
+      //search UG
+      const ugdegree = response.result.filter((degree: any) => degree.level === "UG");
+      setUgdegree(ugdegree);
+      //search PG
+      const pgdegree = response.result.filter((degree: any) => degree.level === "PG");
+      setPgdegree(pgdegree);
+      //search POST PG
+      const postpgdegree = response.result.filter(
+        (degree: any) => degree.level === "Post-PG"
+      );
+      setPostpgdegree(postpgdegree);
+    }
+  };
+  React.useEffect(() => {
+    fetchdegree();
+  }, []);
+  console.log(ugdegree, "ugdegree >>>>>>>>>>>");
+  console.log(pgdegree, "pgdegree >>>>>>>>>>>");
+  console.log(postpgdegree, "postpgdegree >>>>>>>>>>>");
   const candidateTabledata = candidatevalues.map((item: any, index: any) => {
     return (
       <tr key={index}>
@@ -276,18 +317,25 @@ const Candidate: React.FC = () => {
           ))}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          <button
-            className="bg-blue-500 text-white px-3 py-1 rounded-md"
-            onClick={() => handleEdit(item)}
-          >
-            Edit
-          </button>
-          <button
-            className="bg-red-500 text-white px-3 py-1 rounded-md"
-            onClick={() => handleDelete(item.id)}
-          >
-            Delete
-          </button>
+          
+          <div className="flex items-center justify-center gap-2">
+            <MdEdit
+              className="text-blue-500 cursor-pointer text-3xl"
+              onClick={() => handleEdit(item)}
+            />
+            <MdDelete
+              className="text-red-500 cursor-pointer text-3xl"
+              onClick={() => {
+                setSelectedId(item.id);
+                setDialogOpen(true);
+              }}
+            />
+            <DeleteDialog
+              isOpen={isDialogOpen}
+              onClose={() => setDialogOpen(false)}
+              onDelete={() => handleDelete(selectedId!)}
+            />
+          </div>
         </td>
       </tr>
     );
@@ -295,7 +343,9 @@ const Candidate: React.FC = () => {
 
   useEffect(() => {
     fetchcandidatedata();
-  }, []);
+    fetchtags();
+    fetchdesignations();
+  }, [0]);
 
   const fetchdesignations = async () => {
     try {
@@ -308,9 +358,7 @@ const Candidate: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchdesignations();
-  }, []);
+
 
   const fetchtags = async () => {
     try {
@@ -323,22 +371,30 @@ const Candidate: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchtags();
-  }, []);
+
     return (
       <Layout>
         <Breadcrumb pageName="Candidate" />
         <section className="product gap-2 flex flex-row mb-3 p-2 bg-gray-200">
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              resetForm();
+              setIsOpen(true);
+            }}
             className="bg-white capitalize border py-1 px-3 "
           >
             add candidate
           </button>
           {/* model */}
           {isOpen && (
-            <Modal setOpen={setIsOpen}>
+            <Modal
+              setOpen={(open) => {
+                setIsOpen(open);
+                if (!open) {
+                  resetForm();
+                }
+              }}
+            >
               <div className="form overflow-y-auto max-h-[500px]">
                 <form onSubmit={formik.handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -362,7 +418,9 @@ const Candidate: React.FC = () => {
                       )}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Country</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Country
+                      </label>
                       <CountrySelect
                         onChange={(e: any) => {
                           setCountryid(e);
@@ -371,11 +429,12 @@ const Candidate: React.FC = () => {
                         region={region}
                         value={countryid} // Add this line
                         defaultValue={countryid} // Add this line for initial va
-                        
                       />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">State</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        State
+                      </label>
                       <StateSelect
                         countryid={countryid.id}
                         onChange={(e: any) => {
@@ -387,7 +446,9 @@ const Candidate: React.FC = () => {
                       />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">City</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        City
+                      </label>
                       <CitySelect
                         countryid={countryid.id}
                         stateid={stateid.id}
@@ -571,28 +632,24 @@ const Candidate: React.FC = () => {
                         Designation
                       </label>
 
-                      <select
-                        name="designationId"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.designationId}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      >
-                        <option value="">--select--</option>
-                        {designation.map((item: any, index: any) => {
-                          return (
-                            <option key={index} value={item.id}>
-                              {item.title}
-                            </option>
-                          );
-                        })}
-                      </select>
-                      {formik.touched.designationId &&
-                        formik.errors.designationId && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {formik.errors.designationId}
-                          </p>
+                      <Select
+                        options={designation}
+                        getOptionLabel={(option: DesignationType) =>
+                          option.title
+                        }
+                        getOptionValue={(option: DesignationType) =>
+                          option.id.toString()
+                        } // Convert id to string
+                        onChange={(e: DesignationType | null) => {
+                          if (e) {
+                            formik.setFieldValue("designationId", e.id);
+                          }
+                        }}
+                        value={designation.find(
+                          (d: DesignationType) =>
+                            d.id === formik.values.designationId
                         )}
+                      />
                     </div>
                     {/* Date of Birth Field */}
                     <div>
@@ -655,77 +712,81 @@ const Candidate: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700">
                         Tags
                       </label>
-                      <select
-                        name="tags"
-                        multiple
-                        value={formik.values.tags} // Add this line
-                        onChange={(e) => {
-                          const selectedTags = Array.from(
-                            e.target.selectedOptions
-                          ).map((option) => Number(option.value));
-                          formik.setFieldValue("tags", selectedTags);
-                        }}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      >
-                        {tags.map((item: any, index: any) => {
-                          return (
-                            <option key={index} value={item.id}>
-                              {item.Tag_Name}
-                            </option>
+
+                      <Select
+                        isMulti
+                        options={tags}
+                        getOptionLabel={(option: any) => option.Tag_Name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(e: any) => {
+                          formik.setFieldValue(
+                            "tags",
+                            e.map((tag: any) => tag.id)
                           );
-                        })}
-                      </select>
+                        }}
+                        value={tags.filter((tag: any) =>
+                          formik.values.tags.includes(tag.id)
+                        )}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         UG Course
                       </label>
-
-                      <input
-                        type="text"
-                        name="education.ugCourse"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.education.ugCourse}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                      {formik.touched.education?.ugCourse &&
-                        formik.errors.education?.ugCourse && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {formik.errors.education.ugCourse}
-                          </p>
+                      <Select
+                        options={ugdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.ugCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={ugdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.ugCourse
                         )}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         PG Course
                       </label>
-                      <input
-                        type="text"
-                        name="education.pgCourse"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.education.pgCourse}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                      {formik.touched.education?.pgCourse &&
-                        formik.errors.education?.pgCourse && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {formik.errors.education.pgCourse}
-                          </p>
+                      <Select
+                        options={pgdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.pgCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={pgdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.pgCourse
                         )}
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Post PG Course
                       </label>
-                      <input
-                        type="text"
-                        name="education.postPgCourse"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.education.postPgCourse}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      <Select
+                        options={postpgdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.postPgCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={postpgdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.postPgCourse
+                        )}
                       />
                     </div>
                   </div>
@@ -749,7 +810,7 @@ const Candidate: React.FC = () => {
                 </select> */}
         </section>
         {/* show table */}
-        <div className="overflow-x-auto overflow-y-auto max-h-[80vh]">
+        <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
           <table className="min-w-full border border-gray-200 bg-white rounded-lg">
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
