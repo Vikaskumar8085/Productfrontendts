@@ -18,6 +18,8 @@ import Tag from './Pages/DashboardPages/Tag/Tag';
 import Education from './Pages/DashboardPages/Education/Education';
 import Reason from './Pages/DashboardPages/Reason/Reason';
 import { Toaster } from 'react-hot-toast';
+import Security from './Pages/DashboardPages/SecurityQAPage/Security';
+import ClientSecurity from './Pages/DashboardPages/ClientSecurityPage/ClientSecurity';
 
 function App() {
   return (
@@ -38,8 +40,10 @@ function App() {
         <Route path="/education" element={<Education />} />
         <Route path="/tag" element={<Tag />} />
         <Route path="/Reason" element={<Reason />} />
+        <Route path="/security" element={<Security />} />
+        <Route path="/client-security" element={<ClientSecurity />} />
         <Route path="*" element={<Error />} />
-       
+
       </Routes>
       <Toaster />
     </>

@@ -54,6 +54,8 @@ function Sidebar({ collable }: sidbarprops) {
                                         }`}
                                 >
                                     <Link to="/client" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600"> Client</Link>
+                                    <Link to="/client-security" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Client security</Link>
+
                                 </div>
                             </div>
                             {/* client management */}
@@ -77,6 +79,7 @@ function Sidebar({ collable }: sidbarprops) {
                                     <Link to="/region" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Region</Link>
                                     <Link to="/tag" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Tag</Link>
                                     <Link to="/education" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Education</Link>
+                                    <Link to="/security" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">security</Link>
                                 </div>
                             </div>
 
