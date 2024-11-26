@@ -88,8 +88,7 @@ const Candidate: React.FC = () => {
         values.country = countryid.name;
         values.city = cityid.name;
 
-        // Push selected tags into values.tags array
-        console.log(values, "values >>>>>>>>>>");
+        
         let response;
         if (editMode && selectedCandidate) {
           response = await updatecandidateapicall(selectedCandidate.id, values);
@@ -233,9 +232,7 @@ const resetForm = () => {
   React.useEffect(() => {
     fetchdegree();
   }, []);
-  console.log(ugdegree, "ugdegree >>>>>>>>>>>");
-  console.log(pgdegree, "pgdegree >>>>>>>>>>>");
-  console.log(postpgdegree, "postpgdegree >>>>>>>>>>>");
+  
   const candidateTabledata = candidatevalues.map((item: any, index: any) => {
     return (
       <tr key={index}>
