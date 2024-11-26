@@ -4,6 +4,8 @@ import Modal from "../../../Common/Modal/Modal";
 import { useFormik } from "formik";
 import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
+import { fetchtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
+import Select from "react-select";
 import {
   createclietapicall,
   fetchclientapicall,
@@ -21,11 +23,12 @@ interface clienttypes {
   FirstName: string;
   LastName: string;
   Email: string;
-  Phone: number;
+  Phone: string;
   Address: string;
-  PostCode: number;
+  PostCode: string;
   GstNumber: string | number;
   Status: string | boolean;
+  tags: any[];
 }
 
 
@@ -33,11 +36,13 @@ const Client: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [editClientId, setEditClientId] = useState<number | null>(null); // To store the ID of the client being edited
   const clientvalues = useAppSelector((state) => state.client.values);
+  const [tags, setTags] = useState<[]>([]);
   const dispatch = useAppDispatch();
 
   // Fetch clients on mount
   useEffect(() => {
     fetchclients();
+    fetchtags();
   }, [0]);
 
   const fetchclients = async () => {
@@ -56,11 +61,12 @@ const Client: React.FC = () => {
       FirstName: "",
       LastName: "",
       Email: "",
-      Phone: 0,
+      Phone: "",
       Address: "",
-      PostCode: 0,
+      PostCode: "",
       GstNumber: "",
       Status: "",
+      tags: [] as any[],
     },
     onSubmit: async (values) => {
       try {
@@ -94,7 +100,20 @@ const Client: React.FC = () => {
     const clientToEdit = clientvalues.find((client) => client.id === clientId);
     if (clientToEdit) {
       setEditClientId(clientId);
-      formik.setValues(clientToEdit); // Pre-fill form with selected client data
+      formik.setValues(
+        {
+          FirstName: clientToEdit.FirstName,
+          LastName: clientToEdit.LastName,
+          Email: clientToEdit.Email,
+          Phone: clientToEdit.Phone,
+          Address: clientToEdit.Address,
+          PostCode: clientToEdit.PostCode,
+          GstNumber: clientToEdit.GstNumber,
+          Status: clientToEdit.Status,
+          tags: clientToEdit.tags.map((tag: { id: any; }) => tag.id),
+        },
+        true
+      );
       setIsOpen(true); // Open the modal to edit the client
     }
   };
@@ -115,14 +134,15 @@ const Client: React.FC = () => {
   const ClientTable = clientvalues.map((item, index) => {
     const {
       id,
-      FirstName,
-      LastName,
-      Email,
-      Phone,
+       FirstName,
+   LastName,
+     Email,
+    Phone,
       GstNumber,
       Address,
       PostCode,
       Status,
+      tags,
     } = item;
     return (
       <tr key={id} className="border-b hover:bg-gray-50">
@@ -135,6 +155,11 @@ const Client: React.FC = () => {
         <td className="px-4 py-2">{PostCode}</td>
         <td className="px-4 py-2">{GstNumber}</td>
         <td className="px-4 py-2 text-green-600">{Status}</td>
+        <td className="px-4 py-2">
+          {tags.map((tag: any, idx: number) => (
+            <div key={idx}>{tag.Tag_Name}</div>
+          ))}
+        </td>
         <td className="px-4 py-2">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md"
@@ -152,7 +177,16 @@ const Client: React.FC = () => {
       </tr>
     );
   });
-
+  const fetchtags = async () => {
+    try {
+      const response: any = await fetchtagapicall();
+      if (response.success) {
+        setTags(response.result);
+      }
+    } catch (error: any) {
+      console.log(error?.message);
+    }
+  };
   return (
     <Layout>
       <Breadcrumb pageName="Client" />
@@ -233,7 +267,7 @@ const Client: React.FC = () => {
                 <input
                   {...formik.getFieldProps("Phone")}
                   name="Phone"
-                  type="number"
+                  type="text"
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="Phone"
                 />
@@ -265,7 +299,7 @@ const Client: React.FC = () => {
                 <input
                   {...formik.getFieldProps("PostCode")}
                   name="PostCode"
-                  type="number"
+                  type="text"
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="PostCode"
                 />
@@ -304,6 +338,27 @@ const Client: React.FC = () => {
                   <option value="Inactive">Inactive</option>
                 </select>
               </div>
+              <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Tags
+                      </label>
+
+                      <Select
+                        isMulti
+                        options={tags}
+                        getOptionLabel={(option: any) => option.Tag_Name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(e: any) => {
+                          formik.setFieldValue(
+                            "tags",
+                            e.map((tag: any) => tag.id)
+                          );
+                        }}
+                        value={tags.filter((tag: any) =>
+                          formik.values.tags.includes(tag.id)
+                        )}
+                      />
+                    </div>
 
               <div>
                 <button
@@ -335,6 +390,7 @@ const Client: React.FC = () => {
                 GST Number
               </th>
               <th className="px-4 py-2 font-medium text-gray-900">Status</th>
+              <th className="px-4 py-2 font-medium text-gray-900">Tags</th>
               <th className="px-4 py-2 font-medium text-gray-900">Actions</th>
             </tr>
           </thead>
