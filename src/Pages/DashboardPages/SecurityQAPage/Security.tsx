@@ -3,26 +3,99 @@ import Layout from '../../../component/Layout/Layout'
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
 import Modal from '../../../Common/Modal/Modal'
 import { useFormik } from 'formik'
+import { createsecurityapicall, fetchsecurityapicall } from '../../../Services/Admin/SecurityApiService/Securityapiservice'
+import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
+import { setAddSecurity, setSecurity } from '../../../Redux/securityslice'
 
 const Security: React.FC = () => {
+    const dispatch = useAppDispatch();
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false);
     const [editReasonId, setEditReasonId] = React.useState<number | null>(null); // state for edit mode
     const [isEditMode, setIsEditMode] = React.useState<boolean>(false); // flag for edit mode
 
+    const securitydata = useAppSelector((state) => state.security.value)
 
     let formik = useFormik({
         initialValues: {
-            reason: "",
+            Question: "",
+            Answer: ""
         },
-        onSubmit: async () => {
+        onSubmit: async (values) => {
             try {
+                let response = await createsecurityapicall(values);
+                console.log(response, "response")
+                if (response.success) {
+                    dispatch(setAddSecurity(response.result))
+                    formik.resetForm();
+                    setIsOpen(false)
+
+                }
 
             } catch (error: any) {
+                console.log(error)
 
             }
         }
     })
 
+
+    const fetchsecuritydata = async () => {
+        try {
+            const response: any = await fetchsecurityapicall();
+            if (response.success) {
+                dispatch(setSecurity(response.result))
+            }
+
+        } catch (error: any) {
+            console.log(error?.message)
+        }
+    }
+
+
+    React.useEffect(() => {
+        fetchsecuritydata();
+    }, [0])
+
+
+
+    const securitytable = securitydata.map((item, index) => {
+        const { id, Question, Answer } = item;
+
+        return (
+            <>
+
+                <tbody>                    <tr key={item.id}>
+                    <td key={index}>{index + 1}</td>
+                    <td>{Question}</td>
+                    <td>{Answer}</td>
+                    {/* <td>
+                                <div className="flex gap-2">
+                                    <MdOutlineEdit
+                                        className="text-blue-500 cursor-pointer text-2xl"
+                                        onClick={() => handleEdit(item.id)}
+                                    />
+                                    <div className="flex items-center justify-center bg-gray-100">
+                                        <MdDelete
+                                            className="text-red-500 cursor-pointer text-2xl"
+                                            onClick={() => setDialogOpen(true)}
+                                        />
+                                        <DeleteDialog
+                                            isOpen={isDialogOpen}
+                                            onClose={() => setDialogOpen(false)}
+                                            onDelete={() => handleDelete(item.id)}
+                                        />
+                                    </div>
+
+                                </div>
+                            </td> */}
+                </tr>
+
+                </tbody>
+
+            </>
+
+        )
+    })
 
 
     return (
@@ -128,14 +201,19 @@ const Security: React.FC = () => {
                                 ID
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Title
+                                Question
                             </th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Actions
+                                Answer
+                            </th>
+
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                Action
                             </th>
                         </tr>
                     </thead>
 
+                    {securitytable}
 
                 </table>
             </div>

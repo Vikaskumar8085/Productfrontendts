@@ -20,6 +20,7 @@ import Reason from './Pages/DashboardPages/Reason/Reason';
 import { Toaster } from 'react-hot-toast';
 import Security from './Pages/DashboardPages/SecurityQAPage/Security';
 import ClientSecurity from './Pages/DashboardPages/ClientSecurityPage/ClientSecurity';
+import ResetPassword from './Pages/AuthPages/ResetPassword/ResetPassword';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Route path="/Reason" element={<Reason />} />
         <Route path="/security" element={<Security />} />
         <Route path="/client-security" element={<ClientSecurity />} />
+        <Route path='/resetpassword/:resetToken' element={<ResetPassword />} />
         <Route path="*" element={<Error />} />
 
       </Routes>

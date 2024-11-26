@@ -18,8 +18,17 @@ export const forgetpasswordapicall = async (data: forgetPassword) => {
 export const profileapicall = async () => {
   const response = await apiInstance.get("/user/profile");
   return response.data;
-}
+};
 export const updateprofileapicall = async (data: any) => {
   const response = await apiInstance.put("/user/update-profile", data);
   return response.data;
-}
+};
+
+export const resetpasswordapicall = async (data: any) => {
+  console.log(data, "data");
+  const response = await apiInstance.post<any>(
+    `/user/reset-password/${data.resetToken}`,
+    data.password
+  );
+  return response.data;
+};

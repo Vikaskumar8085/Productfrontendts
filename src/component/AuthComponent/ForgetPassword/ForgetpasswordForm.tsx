@@ -1,6 +1,7 @@
 import React from 'react'
 import { useFormik } from 'formik';
-import { forgetpasswordapicall } from '../../../Services/UserApiSerice';
+import { forgetpasswordapicall } from '../../../Services/UserApiSerice/index';
+import toast from 'react-hot-toast';
 
 interface ForgetFormValue {
     Email: string
@@ -14,10 +15,11 @@ const ForgetpasswordForm: React.FC = () => {
         },
         onSubmit: async (values) => {
             try {
-                console.log(values, "values")
+
                 const response: any = await forgetpasswordapicall(values);
+                console.log(response, "response")
                 if (response.success) {
-                    console.log(response)
+                    toast.success(response.message)
                 }
             } catch (error) {
                 console.log(error)

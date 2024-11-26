@@ -1,4 +1,4 @@
-import {configureStore} from "@reduxjs/toolkit";
+import {configureStore, UnknownAction} from "@reduxjs/toolkit";
 import UserSlice from "./UserSlice/index";
 import CandidateSlice from "./CandidateSlice/CandidateSlice";
 import Tagslice from "./TagSlice/Tagslice";
@@ -7,6 +7,7 @@ import Regionslice from "./Region/Regionslice";
 import reasonSlice from "./ReasonSlice/reasonSlice";
 import Educationslice from "./EducationSlice/Educationslice";
 import DesignationSlice from "./DesignationSlice/DesignationSlice";
+import  securitySlice from "./securityslice/index";
 import ProfileSlice from "./ProfileSlice/index";
 export const store = configureStore({
   reducer: {
@@ -19,9 +20,11 @@ export const store = configureStore({
     education: Educationslice,
     designation: DesignationSlice,
     profile: ProfileSlice,
+    security:securitySlice
     
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+

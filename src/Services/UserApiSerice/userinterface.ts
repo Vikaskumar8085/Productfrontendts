@@ -1,17 +1,17 @@
 export interface loginauth {
   [x: string]: any;
-  Email: String;
-  Password: String;
+  Email: string;
+  Password: string;
 }
 
 export interface registerauth {
-  FirstName: String;
-  LastName: String;
-  Email: String;
-  Password: String;
-  Phone: String;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Password: string;
+  Phone: string;
 }
 
 export interface forgetPassword {
-  Email: String;
+  Email: string;
 }
