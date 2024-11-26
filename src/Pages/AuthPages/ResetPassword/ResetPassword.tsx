@@ -3,7 +3,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import apiInstance from "../../../Services/apiservice/apiInstance";
 import { useParams } from "react-router-dom";
-import { resetpasswordapicall } from "../../../Services/UserApiSerice";
 import toast from "react-hot-toast";
 
 const ResetPassword: React.FC = () => {
