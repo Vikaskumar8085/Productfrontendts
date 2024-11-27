@@ -3,16 +3,20 @@ import Layout from '../../../component/Layout/Layout'
 import Breadcrumb from '../../../Common/BreadCrumb/BreadCrumb'
 import Modal from '../../../Common/Modal/Modal'
 import { useFormik } from 'formik'
-import { createsecurityapicall, fetchsecurityapicall } from '../../../Services/Admin/SecurityApiService/Securityapiservice'
+import { createsecurityapicall, fetchsecurityapicall, removesecurityapicall } from '../../../Services/Admin/SecurityApiService/Securityapiservice'
 import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
-import { setAddSecurity, setSecurity } from '../../../Redux/securityslice'
+import { setAddSecurity, setremovesecurity, setSecurity } from '../../../Redux/securityslice'
+import { MdDelete, MdOutlineEdit } from 'react-icons/md'
+import DeleteDialog from '../../../Common/DeleteDialog/DeleteDialog'
+import toast from 'react-hot-toast'
 
 const Security: React.FC = () => {
     const dispatch = useAppDispatch();
     const [isOpen, setIsOpen] = React.useState<boolean | null>(false);
     const [editReasonId, setEditReasonId] = React.useState<number | null>(null); // state for edit mode
     const [isEditMode, setIsEditMode] = React.useState<boolean>(false); // flag for edit mode
-
+    const [isDialogOpen, setDialogOpen] = React.useState<boolean>(false);
+    const [isId, setId] = React.useState<number | null>(null);
     const securitydata = useAppSelector((state) => state.security.value)
 
     let formik = useFormik({
@@ -57,6 +61,24 @@ const Security: React.FC = () => {
     }, [0])
 
 
+    const handleEdit = (value: any) => {
+        console.log(value)
+    }
+
+    const handleDelete = async (id: any) => {
+        try {
+            const response: any = await removesecurityapicall(id)
+            if (response.success) {
+                dispatch(setremovesecurity(response.result))
+                toast.success(response.message)
+            }
+        } catch (error: any) {
+            console.log(error.message)
+        }
+        setDialogOpen(false)
+
+
+    }
 
     const securitytable = securitydata.map((item, index) => {
         const { id, Question, Answer } = item;
@@ -64,31 +86,32 @@ const Security: React.FC = () => {
         return (
             <>
 
-                <tbody>                    <tr key={item.id}>
-                    <td key={index}>{index + 1}</td>
-                    <td>{Question}</td>
-                    <td>{Answer}</td>
-                    {/* <td>
-                                <div className="flex gap-2">
-                                    <MdOutlineEdit
-                                        className="text-blue-500 cursor-pointer text-2xl"
-                                        onClick={() => handleEdit(item.id)}
-                                    />
-                                    <div className="flex items-center justify-center bg-gray-100">
-                                        <MdDelete
-                                            className="text-red-500 cursor-pointer text-2xl"
-                                            onClick={() => setDialogOpen(true)}
-                                        />
-                                        <DeleteDialog
-                                            isOpen={isDialogOpen}
-                                            onClose={() => setDialogOpen(false)}
-                                            onDelete={() => handleDelete(item.id)}
-                                        />
-                                    </div>
+                <tbody>
+                    <tr key={id}>
+                        <td key={index}>{index + 1}</td>
+                        <td>{Question}</td>
+                        <td>{Answer}</td>
+                        <td>
+                            <div className="flex gap-2">
+                                {/* <MdOutlineEdit
+                                    className="text-blue-500 cursor-pointer text-2xl"
+                                    onClick={() => handleEdit(id)}
+                                /> */}
+                                <div className="flex items-center justify-center bg-gray-100">
+                                    <MdDelete
+                                        className="text-red-500 cursor-pointer text-2xl"
 
+                                        onClick={() => { setId(id); setDialogOpen(true) }}
+                                    />
+                                    <DeleteDialog
+                                        isOpen={isDialogOpen}
+                                        onClose={() => setDialogOpen(false)}
+                                        onDelete={() => handleDelete(isId)} />
                                 </div>
-                            </td> */}
-                </tr>
+
+                            </div>
+                        </td>
+                    </tr>
 
                 </tbody>
 

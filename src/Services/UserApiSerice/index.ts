@@ -24,11 +24,8 @@ export const updateprofileapicall = async (data: any) => {
   return response.data;
 };
 
-// export const resetpasswordapicall = async (data: any) => {
-//   console.log(data, "data");
-//   const response = await apiInstance.post<any>(
-//     `/user/reset-password/${data.resetToken}`,
-//     data.password
-//   );
-//   return response.data;
-// };
+// get user types
+export const getUserapiCall = async () => {
+  const response = await apiInstance.get("/user/get-user");
+  return response.data;
+};

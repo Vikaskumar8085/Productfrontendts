@@ -4,12 +4,14 @@ interface DeleteDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
+
 }
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({
   isOpen,
   onClose,
   onDelete,
+
 }) => {
   if (!isOpen) return null;
 
@@ -21,8 +23,8 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
             Confirm Deletion
           </h2>
           <p className="text-gray-600 mb-6 text-wrap">
-            Are you sure you want to delete this item? 
-        
+            Are you sure you want to delete this item?
+
             This action cannot be
             undone.
           </p>
@@ -36,6 +38,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
             <button
               className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
               onClick={onDelete}
+
             >
               Delete
             </button>

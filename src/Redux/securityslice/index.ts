@@ -22,7 +22,7 @@ const securitySlice = createSlice({
       );
     },
     setremovesecurity: (state, action: PayloadAction<any>) => {
-      state.value = state.value.filter((item) => item.id !== action.payload);
+      state.value = state.value.filter((item) => item.id !== action.payload.id);
     },
   },
 });

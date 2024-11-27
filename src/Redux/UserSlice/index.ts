@@ -1,13 +1,14 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface UserAuth {
   isLogin: boolean;
   values: [];
+  Role: string;
 }
-
 const initialState: UserAuth = {
   isLogin: false,
   values: [],
+  Role: "",
 };
 
 const UserSlice = createSlice({
@@ -17,7 +18,10 @@ const UserSlice = createSlice({
     setuserauth: (state, action: PayloadAction<any>) => {
       state.values = action.payload;
     },
+    setUserRole: (state, action: PayloadAction<any>) => {
+      state.Role = action.payload;
+    },
   },
 });
-export const { setuserauth } = UserSlice.actions;
+export const {setuserauth, setUserRole} = UserSlice.actions;
 export default UserSlice.reducer;

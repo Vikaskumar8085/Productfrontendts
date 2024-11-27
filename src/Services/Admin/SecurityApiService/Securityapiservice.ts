@@ -19,7 +19,7 @@ export const fetchsecurityapicall = async () => {
 export const removesecurityapicall = async (
   id: Axios.AxiosXHRConfigBase<unknown> | undefined
 ) => {
-  const response = await apiInstance.delete("/security/remove", id);
+  const response = await apiInstance.delete(`/security/remove/${id}`);
   return response.data;
 };
 
