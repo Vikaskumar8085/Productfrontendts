@@ -5,6 +5,9 @@ import { useFormik } from "formik";
 import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
 import { fetchtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
+import { MdOutlineEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
 import Select from "react-select";
 import {
   createclietapicall,
@@ -37,6 +40,9 @@ const Client: React.FC = () => {
   const [editClientId, setEditClientId] = useState<number | null>(null); // To store the ID of the client being edited
   const clientvalues = useAppSelector((state) => state.client.values);
   const [tags, setTags] = useState<[]>([]);
+  const [isId, setId] = React.useState<any | null>(null);
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  
   const dispatch = useAppDispatch();
 
   // Fetch clients on mount
@@ -122,6 +128,7 @@ const Client: React.FC = () => {
     try {
       const response: any = await deleteclientapicall(clientId);
       if (response.success) {
+        setDialogOpen(false);
         toast.success(response.message)
         dispatch(setdeleteclient(clientId));
       }
@@ -161,7 +168,7 @@ const Client: React.FC = () => {
           ))}
         </td>
         <td className="px-4 py-2">
-          <button
+          {/* <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md"
             onClick={() => handleEdit(id)}
           >
@@ -172,7 +179,27 @@ const Client: React.FC = () => {
             onClick={() => handleDelete(id)}
           >
             Delete
-          </button>
+          </button> */}
+          <div className="flex gap-2">
+            <MdOutlineEdit
+              className="text-blue-500 cursor-pointer text-2xl"
+              onClick={() => handleEdit(id)}
+            />
+            <div className="flex items-center justify-center bg-gray-100">
+              <MdDelete
+                className="text-red-500 cursor-pointer text-2xl"
+                onClick={() => {
+                  setId(id);
+                  setDialogOpen(true);
+                }}
+              />
+              <DeleteDialog
+                isOpen={isDialogOpen}
+                onClose={() => setDialogOpen(false)}
+                onDelete={() => handleDelete(isId)}
+              />
+            </div>
+          </div>
         </td>
       </tr>
     );
@@ -186,6 +213,10 @@ const Client: React.FC = () => {
     } catch (error: any) {
       console.log(error?.message);
     }
+  };
+  const resetForm = () => {
+    formik.resetForm();
+    setEditClientId(null);
   };
   return (
     <Layout>
@@ -201,7 +232,12 @@ const Client: React.FC = () => {
       </section>
 
       {isOpen && (
-        <Modal setOpen={setIsOpen}>
+        <Modal setOpen={(open) => {
+          setIsOpen(open);
+          if (!open) {
+            resetForm();
+          }
+        }}>
           <div className="form">
             <form
               onSubmit={formik.handleSubmit}
