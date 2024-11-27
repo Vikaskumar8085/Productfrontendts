@@ -55,7 +55,7 @@ const Header = ({ collable, setcollable }: headerprops) => {
                     {/* Logout Button */}
                     <button
                         className="p-2 bg-gray-600 rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        onClick={() => handleLogout} // Replace with actual logout functionality
+                        onClick={handleLogout} // Replace with actual logout functionality
                     >
                         <FaPowerOff className="text-xl" />
                     </button>

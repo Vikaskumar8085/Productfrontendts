@@ -23,10 +23,11 @@ export const removesecurityapicall = async (
   return response.data;
 };
 
-export const updatesecurityapicall = async (data: any) => {
+export const updatesecurityapicall = async (id:number,data: any) => {
+  console.log(data, "data", id, "id");
   const response = await apiInstance.put(
-    `/security/edit${data.id}`,
-    data.payload
+    `/security/update/${id}`,
+    data
   );
 
   return response.data;
