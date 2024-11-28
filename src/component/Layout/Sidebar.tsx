@@ -93,12 +93,33 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
 
                                 </>
                             }
-
                             {
-                                Roletype.Type === "client" &&
-                                <div>
-                                    client
-                                </div>
+                                Roletype.Type === "client" ?
+
+                                    true ? <>
+
+                                    </> :
+                                        <div>
+                                            <div>
+                                                <button
+                                                    onClick={() => toggleDropdown(3)}
+                                                    className="flex items-center w-full p-2 text-left hover:bg-gray-700 focus:outline-none transition"
+                                                >
+                                                    <span className="flex-1">Client Management</span>
+                                                    <span className="ml-2">{openDropdown === 3 ? '-' : '+'}</span>
+                                                </button>
+                                                <div
+                                                    className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 3 ? 'max-h-40' : 'max-h-0'
+                                                        }`}
+                                                >
+                                                    <Link to="/client" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600"> Client</Link>
+                                                    <Link to="/client-security" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Client security</Link>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    : null
                             }
 
                         </nav>
