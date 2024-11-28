@@ -20,8 +20,7 @@ const Security: React.FC = () => {
 
     let formik = useFormik({
         initialValues: {
-            Question: "",
-            Answer: ""
+            questionText:"",
         },
         onSubmit: async (values) => {
             try {
@@ -69,8 +68,7 @@ const Security: React.FC = () => {
             setIsEditMode(true);
             setEditReasonId(id);
             formik.setValues({
-                Question: selectedItem.Question,
-                Answer: selectedItem.Answer,
+                questionText: selectedItem.questionText,
             });
             setIsOpen(true);
         }
@@ -90,14 +88,14 @@ const Security: React.FC = () => {
     };
 
     const securitytable = securitydata.map((item: any, index: number) => {
-        const { id, Question, Answer } = item;
+        const { id, questionText } = item;
 
         return (
             <tbody key={id}>
                 <tr>
                     <td>{index + 1}</td>
-                    <td>{Question}</td>
-                    <td>{Answer}</td>
+                    <td>{questionText}</td>
+                    
                     <td>
                         <div className="flex gap-2">
                             <MdOutlineEdit
@@ -152,28 +150,17 @@ const Security: React.FC = () => {
                                 <label htmlFor="Question" className="block text-sm font-medium text-gray-600 mb-2">
                                     Question
                                 </label>
-                                <input
+                                <input 
                                     type="text"
-                                    {...formik.getFieldProps("Question")}
-                                    name="Question"
-                                    id="Question"
-                                    placeholder="Enter your Question"
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
+                                    id="questionText"
+                                    name="questionText"
+                                    value={formik.values.questionText}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="Answer" className="block text-sm font-medium text-gray-600 mb-2">
-                                    Answer
-                                </label>
-                                <input
-                                    type="text"
-                                    {...formik.getFieldProps("Answer")}
-                                    name="Answer"
-                                    id="Answer"
-                                    placeholder="Enter Your Answer"
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
-                                />
-                            </div>
+                           
                             <div className="w-full">
                                 <button
                                     type="submit"
@@ -197,9 +184,7 @@ const Security: React.FC = () => {
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 Question
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                Answer
-                            </th>
+                          
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                                 Action
                             </th>
