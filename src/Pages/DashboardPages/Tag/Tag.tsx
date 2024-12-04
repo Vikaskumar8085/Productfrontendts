@@ -64,7 +64,7 @@ function Tag() {
         formik.resetForm();
       } catch (error: any) {
           console.log(error?.message);
-        toast.error("Something went wrong")
+        toast.error(error.response.data.message)
         setIsOpen(false);
         formik.resetForm();
       }
@@ -180,7 +180,7 @@ function Tag() {
         >
           Add Tag
         </button>
-        <button
+        {/* <button
           onClick={csvtemplate}
           className="bg-white flex rounded-md justify-center items-center border rounded-md text-black-100 font-lighter text-md px-4 py-2"
         >
@@ -194,7 +194,7 @@ function Tag() {
           onClick={() => setIsModelOpen(true)}
         >
           Upload CSV
-        </button>
+        </button> */}
       </section>
 
       {/* Add/Edit Tag Modal */}

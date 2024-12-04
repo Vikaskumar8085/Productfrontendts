@@ -66,7 +66,7 @@ const Designation: React.FC = () => {
         }
         formik.resetForm();
       } catch (error: any) {
-        toast.error("Something went wrong")
+        toast.error(error.response.data.message)
         console.log(error?.message);
         setOpen(false);
       }
@@ -162,7 +162,7 @@ const Designation: React.FC = () => {
         </Modal>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
         <table className="min-w-full border border-gray-200 bg-white rounded-lg">
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">

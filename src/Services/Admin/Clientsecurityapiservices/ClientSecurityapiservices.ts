@@ -31,3 +31,12 @@ export const updateclientsecurityapicall = async (data: any) => {
 
   return response.data;
 };
+export const checkclientsecurityapicall = async (data: any) => {
+  const response = await apiInstance.post(`/client-security/check`, data);
+  return response.data;
+}
+
+export const verifyanswerapicall = async (data: any) => {
+  const response = await apiInstance.post(`/client-security/verify`, data);
+  return response.data;
+}

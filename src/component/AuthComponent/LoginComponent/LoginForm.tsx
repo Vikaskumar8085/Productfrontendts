@@ -96,7 +96,7 @@ const LoginForm: React.FC = () => {
 
                 <div className="text-center">
                     <Link to="/forgetpassword" className="text-sm text-blue-600 hover:underline">Forgot your password?</Link>
-                    <Link to="/signup" className="block mt-4 text-sm text-blue-600 hover:underline">Create an account</Link>
+                    {/* <Link to="/signup" className="block mt-4 text-sm text-blue-600 hover:underline">Create an account</Link> */}
                 </div>
             </div>
         </div>

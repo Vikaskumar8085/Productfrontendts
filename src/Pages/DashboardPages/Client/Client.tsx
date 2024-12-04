@@ -95,8 +95,8 @@ const Client: React.FC = () => {
         setIsOpen(false); // Close the modal after the action
         formik.resetForm();
         setEditClientId(null); // Reset edit client ID
-      } catch (error) {
-        toast.error("Something went wrong")
+      } catch (error: any) {
+        toast.error(error.response.data.message)
         console.error("Error submitting form:", error);
       }
     },
@@ -132,8 +132,8 @@ const Client: React.FC = () => {
         toast.success(response.message)
         dispatch(setdeleteclient(clientId));
       }
-    } catch (error) {
-      toast.error("Something went wrong")
+    } catch (error: any) {
+      toast.error(error.response.data.message)
       console.error("Error deleting client:", error);
     }
   };
