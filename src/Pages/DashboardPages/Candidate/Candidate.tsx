@@ -590,6 +590,35 @@ const Candidate: React.FC = () => {
                           </p>
                         )}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        State
+                      </label>
+                      <StateSelect
+                        countryid={101}
+                        onChange={(e: any) => {
+                          setstateid(e);
+                        }}
+                        placeHolder="Select State"
+                        value={stateid}
+                        defaultValue={stateid}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        City
+                      </label>
+                      <CitySelect
+                        countryid={101}
+                        stateid={stateid.id}
+                        onChange={(e: any) => {
+                          setCityid(e);
+                        }}
+                        placeHolder="Select City"
+                        value={cityid}
+                        defaultValue={cityid}
+                      />
+                    </div>
                   </div>
                 </div>
 
