@@ -36,6 +36,8 @@ import {
 } from "../../../Services/Admin/DegreeProgram/index";
 import Select from "react-select";
 import * as Yup from "yup";
+import CreatableSelect from "react-select/creatable";
+import { addDesignationapicall } from "../../../Services/Admin/Designation/index";
 const Candidate: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [ugdegree, setUgdegree] = useState<[]>([]);
@@ -46,7 +48,12 @@ const Candidate: React.FC = () => {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean | null>(false);
   const [tags, setTags] = useState<[]>([]);
-  const [designation, setDesignation] = useState<[]>([]);
+  interface DesignationType {
+    id: number;
+    title: string;
+  }
+  
+  const [designation, setDesignation] = useState<any[]>([]);
   const [region, setRegion] = useState<any>("");
   const [countryid, setCountryid] = useState<any>(0);
   const [stateid, setstateid] = useState<any>(0);
@@ -478,7 +485,7 @@ const Candidate: React.FC = () => {
                     </div>
 
                     {/* Designation Field */}
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Designation
                       </label>
@@ -500,7 +507,51 @@ const Candidate: React.FC = () => {
                             d.id === formik.values.designationId
                         )}
                       />
-                    </div>
+                    </div> */}
+                    <div>
+  <label className="block text-sm font-medium text-gray-700">
+    Designation
+  </label>
+  <CreatableSelect
+  formatCreateLabel={(inputValue) => `Create ${inputValue}`}
+    options={designation}
+    getOptionLabel={(option: any) => option.title}
+    getOptionValue={(option: any) => option.id}
+    onChange={(e: DesignationType | null) => {
+      if (e) {
+        formik.setFieldValue("designationId", e.id);
+      }
+    }}
+    onCreateOption={async (inputValue: string) => {
+      try {
+        // Call the API to save the new designation
+        const newDesignation = await addDesignationapicall({
+         
+          title: inputValue,
+        });
+
+        // Update the state with the new designation returned from the API
+        const newOption = {
+          id: newDesignation.result.id, // Use ID returned from API
+          title: newDesignation.result.title,
+        };
+        setDesignation([...designation, newOption]);
+
+        // Update Formik value
+        formik.setFieldValue("designationId", newOption.id);
+      } catch (error: any) {
+        console.error("Error creating designation:", error.message);
+        toast.error("Failed to create designation. Please try again.");
+      }
+    }}
+    value={designation.find(
+      (d: DesignationType) => d.id === formik.values.designationId
+    )}
+    placeholder="Select designation"
+    
+  />
+</div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Resume Title
