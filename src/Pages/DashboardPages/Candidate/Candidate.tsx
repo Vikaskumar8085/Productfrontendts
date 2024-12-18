@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Layout from "../../../component/Layout/Layout";
 import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
@@ -31,8 +30,12 @@ import toast from "react-hot-toast";
 import { fetchtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
 import { MdDelete, MdEdit } from "react-icons/md";
 import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
-import {fetchdegreebynamesapicall,fetchdegreeapicall} from "../../../Services/Admin/DegreeProgram/index"
-import Select from 'react-select'
+import {
+  fetchdegreebynamesapicall,
+  fetchdegreeapicall,
+} from "../../../Services/Admin/DegreeProgram/index";
+import Select from "react-select";
+import * as Yup from "yup";
 const Candidate: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [ugdegree, setUgdegree] = useState<[]>([]);
@@ -82,13 +85,47 @@ const Candidate: React.FC = () => {
         postPgCourse: "",
       },
     },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Name is required."),
+      resumeTitle: Yup.string().required("Resume title is required."),
+      contactNumber: Yup.string()
+        .matches(/^[0-9]{10}$/, "Contact number must be a 10-digit number.")
+        .required("Contact number is required."),
+      whatsappNumber: Yup.string()
+        .matches(/^[0-9]{10}$/, "Whatsapp number must be a 10-digit number.")
+        .required("Whatsapp number is required."),
+      email: Yup.string()
+        .email("Invalid email format.")
+        .required("Email is required."),
+      workExp: Yup.string(),
+      currentCTC: Yup.string(),
+      currentLocation: Yup.string(),
+      state: Yup.string(),
+      preferredLocation: Yup.string(),
+      dob: Yup.date(),
+      currentEmployeer: Yup.string(),
+      postalAddress: Yup.string(),
+      country: Yup.string(),
+      city: Yup.string(),
+      reason1: Yup.string(),
+      reason2: Yup.string(),
+      reason3: Yup.string(),
+      designationId: Yup.number(),
+      tags: Yup.array(),
+      education: Yup.object({
+        ugCourse: Yup.string(),
+        pgCourse: Yup.string(),
+        postPgCourse: Yup.string(),
+      }),
+    }),
+    //console if error
+
     onSubmit: async (values, { resetForm }) => {
       try {
         values.state = stateid.name;
-        values.country = countryid.name;
+        values.country = "India";
         values.city = cityid.name;
 
-        
         let response;
         if (editMode && selectedCandidate) {
           response = await updatecandidateapicall(selectedCandidate.id, values);
@@ -109,21 +146,21 @@ const Candidate: React.FC = () => {
           setSelectedCandidate(null);
         }
       } catch (error: any) {
-        toast.error("Something went wrong");
-        console.log(error);
+        toast.error(error.response.data.message);
+        console.log(error.response.data.message);
         setIsOpen(false);
         resetForm();
       }
     },
   });
-const resetForm = () => {
-  formik.resetForm();
-  setEditMode(false);
-  setSelectedCandidate(null);
-  setCountryid(0);
-  setstateid(0);
-  setCityid(0);
-};
+  const resetForm = () => {
+    formik.resetForm();
+    setEditMode(false);
+    setSelectedCandidate(null);
+    setCountryid(0);
+    setstateid(0);
+    setCityid(0);
+  };
   const fetchcandidatedata = async () => {
     try {
       const response = await fetchcandidatetapicall();
@@ -148,7 +185,7 @@ const resetForm = () => {
       console.log(error);
     }
   };
-  
+
   const handleEdit = async (candidate: any) => {
     setSelectedCandidate(candidate);
     setEditMode(true);
@@ -170,7 +207,7 @@ const resetForm = () => {
         }
       }
     }
-    
+
     formik.setValues({
       name: candidate.name,
       resumeTitle: candidate.resumeTitle,
@@ -214,13 +251,17 @@ const resetForm = () => {
     return age;
   };
   const fetchdegree = async () => {
-    const response:any = await fetchdegreeapicall();
+    const response: any = await fetchdegreeapicall();
     if (response.success) {
       //search UG
-      const ugdegree = response.result.filter((degree: any) => degree.level === "UG");
+      const ugdegree = response.result.filter(
+        (degree: any) => degree.level === "UG"
+      );
       setUgdegree(ugdegree);
       //search PG
-      const pgdegree = response.result.filter((degree: any) => degree.level === "PG");
+      const pgdegree = response.result.filter(
+        (degree: any) => degree.level === "PG"
+      );
       setPgdegree(pgdegree);
       //search POST PG
       const postpgdegree = response.result.filter(
@@ -232,7 +273,7 @@ const resetForm = () => {
   React.useEffect(() => {
     fetchdegree();
   }, []);
-  
+  console.log("formikerrors", formik.errors);
   const candidateTabledata = candidatevalues.map((item: any, index: any) => {
     return (
       <tr key={index}>
@@ -314,7 +355,6 @@ const resetForm = () => {
           ))}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          
           <div className="flex items-center justify-center gap-2">
             <MdEdit
               className="text-blue-500 cursor-pointer text-3xl"
@@ -355,8 +395,6 @@ const resetForm = () => {
     }
   };
 
-
-
   const fetchtags = async () => {
     try {
       const response: any = await fetchtagapicall();
@@ -368,32 +406,36 @@ const resetForm = () => {
     }
   };
 
-
-    return (
-      <Layout>
-        <Breadcrumb pageName="Candidate" />
-        <section className="product gap-2 flex flex-row mb-3 p-2 bg-gray-200">
-          <button
-            onClick={() => {
-              resetForm();
-              setIsOpen(true);
+  return (
+    <Layout>
+      <Breadcrumb pageName="Candidate" />
+      <section className="product gap-2 flex flex-row mb-3 p-2 bg-gray-200">
+        <button
+          onClick={() => {
+            resetForm();
+            setIsOpen(true);
+          }}
+          className="bg-white capitalize border py-1 px-3 "
+        >
+          add candidate
+        </button>
+        {/* model */}
+        {isOpen && (
+          <Modal
+            setOpen={(open) => {
+              setIsOpen(open);
+              if (!open) {
+                resetForm();
+              }
             }}
-            className="bg-white capitalize border py-1 px-3 "
           >
-            add candidate
-          </button>
-          {/* model */}
-          {isOpen && (
-            <Modal
-              setOpen={(open) => {
-                setIsOpen(open);
-                if (!open) {
-                  resetForm();
-                }
-              }}
-            >
-              <div className="form overflow-y-auto max-h-[500px]">
-                <form onSubmit={formik.handleSubmit} className="space-y-6">
+            <div className="form overflow-y-auto max-h-[500px]">
+              <form onSubmit={formik.handleSubmit} className="space-y-6">
+                {/* Personal Information Section */}
+                <div className="border-b border-gray-300 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Personal Information
+                  </h2>
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     {/* Name Field */}
                     <div>
@@ -414,51 +456,51 @@ const resetForm = () => {
                         </p>
                       )}
                     </div>
+
+                    {/* Date of Birth Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
-                        Country
+                        Date of Birth
                       </label>
-                      <CountrySelect
-                        onChange={(e: any) => {
-                          setCountryid(e);
-                        }}
-                        placeHolder="Select Country"
-                        region={region}
-                        value={countryid} // Add this line
-                        defaultValue={countryid} // Add this line for initial va
+                      <input
+                        type="date"
+                        name="dob"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.dob as string}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        State
-                      </label>
-                      <StateSelect
-                        countryid={countryid.id}
-                        onChange={(e: any) => {
-                          setstateid(e);
-                        }}
-                        placeHolder="Select State"
-                        value={stateid}
-                        defaultValue={stateid}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        City
-                      </label>
-                      <CitySelect
-                        countryid={countryid.id}
-                        stateid={stateid.id}
-                        onChange={(e: any) => {
-                          setCityid(e);
-                        }}
-                        placeHolder="Select City"
-                        value={cityid}
-                        defaultValue={cityid}
-                      />
+                      {formik.touched.dob && formik.errors.dob && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {formik.errors.dob}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Resume Title Field */}
+                    {/* Designation Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Designation
+                      </label>
+                      <Select
+                        options={designation}
+                        getOptionLabel={(option: DesignationType) =>
+                          option.title
+                        }
+                        getOptionValue={(option: DesignationType) =>
+                          option.id.toString()
+                        }
+                        onChange={(e: DesignationType | null) => {
+                          if (e) {
+                            formik.setFieldValue("designationId", e.id);
+                          }
+                        }}
+                        value={designation.find(
+                          (d: DesignationType) =>
+                            d.id === formik.values.designationId
+                        )}
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Resume Title
@@ -477,6 +519,34 @@ const resetForm = () => {
                             {formik.errors.resumeTitle}
                           </p>
                         )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Information Section */}
+                <div className="border-b border-gray-300 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Contact Information
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {/* Email Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.email}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {formik.touched.email && formik.errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {formik.errors.email}
+                        </p>
+                      )}
                     </div>
 
                     {/* Contact Number Field */}
@@ -502,7 +572,7 @@ const resetForm = () => {
 
                     {/* WhatsApp Number Field */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className=" block text-sm font-medium text-gray-700">
                         WhatsApp Number
                       </label>
                       <input
@@ -520,27 +590,44 @@ const resetForm = () => {
                           </p>
                         )}
                     </div>
-
-                    {/* Email Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
-                        Email
+                        State
                       </label>
-                      <input
-                        type="email"
-                        name="email"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.email}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      <StateSelect
+                        countryid={101}
+                        onChange={(e: any) => {
+                          setstateid(e);
+                        }}
+                        placeHolder="Select State"
+                        value={stateid}
+                        defaultValue={stateid}
                       />
-                      {formik.touched.email && formik.errors.email && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {formik.errors.email}
-                        </p>
-                      )}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        City
+                      </label>
+                      <CitySelect
+                        countryid={101}
+                        stateid={stateid.id}
+                        onChange={(e: any) => {
+                          setCityid(e);
+                        }}
+                        placeHolder="Select City"
+                        value={cityid}
+                        defaultValue={cityid}
+                      />
+                    </div>
+                  </div>
+                </div>
 
+                {/* Work Experience Section */}
+                <div className="border-b border-gray-300 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Work Experience
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     {/* Work Experience Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -582,6 +669,109 @@ const resetForm = () => {
                         )}
                     </div>
 
+                    {/* Current Employer Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Current Employer
+                      </label>
+                      <input
+                        type="text"
+                        name="currentEmployeer"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.currentEmployeer}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {formik.touched.currentEmployeer &&
+                        formik.errors.currentEmployeer && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formik.errors.currentEmployeer}
+                          </p>
+                        )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Education Section */}
+                <div className="border-b border-gray-300 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Education
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {/* UG Course Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        UG Course
+                      </label>
+                      <Select
+                        options={ugdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.ugCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={ugdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.ugCourse
+                        )}
+                      />
+                    </div>
+
+                    {/* PG Course Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        PG Course
+                      </label>
+                      <Select
+                        options={pgdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.pgCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={pgdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.pgCourse
+                        )}
+                      />
+                    </div>
+
+                    {/* Post PG Course Field */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Post PG Course
+                      </label>
+                      <Select
+                        options={postpgdegree}
+                        getOptionLabel={(option: any) => option.name}
+                        getOptionValue={(option: any) => option.id.toString()}
+                        onChange={(selectedOption: any) => {
+                          formik.setFieldValue(
+                            "education.postPgCourse",
+                            selectedOption?.name || ""
+                          );
+                        }}
+                        value={postpgdegree.find(
+                          (degree: any) =>
+                            degree.name === formik.values.education.postPgCourse
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Information Section */}
+                <div className="border-b border-gray-300 pb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Additional Information
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     {/* Current Location Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -623,69 +813,8 @@ const resetForm = () => {
                           </p>
                         )}
                     </div>
-                    {/* designation */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Designation
-                      </label>
 
-                      <Select
-                        options={designation}
-                        getOptionLabel={(option: DesignationType) =>
-                          option.title
-                        }
-                        getOptionValue={(option: DesignationType) =>
-                          option.id.toString()
-                        } // Convert id to string
-                        onChange={(e: DesignationType | null) => {
-                          if (e) {
-                            formik.setFieldValue("designationId", e.id);
-                          }
-                        }}
-                        value={designation.find(
-                          (d: DesignationType) =>
-                            d.id === formik.values.designationId
-                        )}
-                      />
-                    </div>
-                    {/* Date of Birth Field */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        name="dob"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.dob as string}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                      {formik.touched.dob && formik.errors.dob && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {formik.errors.dob}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Current Employeer
-                      </label>
-                      <input
-                        type="text"
-                        name="currentEmployeer"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.currentEmployeer}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                      {formik.touched.currentEmployeer &&
-                        formik.errors.currentEmployeer && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {formik.errors.currentEmployeer}
-                          </p>
-                        )}
-                    </div>
+                    {/* Postal Address Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Postal Address
@@ -705,11 +834,12 @@ const resetForm = () => {
                           </p>
                         )}
                     </div>
+
+                    {/* Tags Field */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         Tags
                       </label>
-
                       <Select
                         isMulti
                         options={tags}
@@ -726,176 +856,117 @@ const resetForm = () => {
                         )}
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        UG Course
-                      </label>
-                      <Select
-                        options={ugdegree}
-                        getOptionLabel={(option: any) => option.name}
-                        getOptionValue={(option: any) => option.id.toString()}
-                        onChange={(selectedOption: any) => {
-                          formik.setFieldValue(
-                            "education.ugCourse",
-                            selectedOption?.name || ""
-                          );
-                        }}
-                        value={ugdegree.find(
-                          (degree: any) =>
-                            degree.name === formik.values.education.ugCourse
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        PG Course
-                      </label>
-                      <Select
-                        options={pgdegree}
-                        getOptionLabel={(option: any) => option.name}
-                        getOptionValue={(option: any) => option.id.toString()}
-                        onChange={(selectedOption: any) => {
-                          formik.setFieldValue(
-                            "education.pgCourse",
-                            selectedOption?.name || ""
-                          );
-                        }}
-                        value={pgdegree.find(
-                          (degree: any) =>
-                            degree.name === formik.values.education.pgCourse
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Post PG Course
-                      </label>
-                      <Select
-                        options={postpgdegree}
-                        getOptionLabel={(option: any) => option.name}
-                        getOptionValue={(option: any) => option.id.toString()}
-                        onChange={(selectedOption: any) => {
-                          formik.setFieldValue(
-                            "education.postPgCourse",
-                            selectedOption?.name || ""
-                          );
-                        }}
-                        value={postpgdegree.find(
-                          (degree: any) =>
-                            degree.name === formik.values.education.postPgCourse
-                        )}
-                      />
-                    </div>
                   </div>
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    {editMode ? "Update Candidate" : "Add Candidate"}
-                  </button>
-                </form>
-              </div>
-            </Modal>
-          )}
+                <button
+                  type="submit"
+                  className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  {editMode ? "Update Candidate" : "Add Candidate"}
+                </button>
+              </form>
+            </div>
+          </Modal>
+        )}
 
-          {/* model */}
-          {/* <select className='p-1'>
+        {/* model */}
+        {/* <select className='p-1'>
                     <option value="-- select option --">Bulk Action</option>
                     <option value="upload csv" onClick={}>Csv upload</option>
 
                 </select> */}
-        </section>
-        {/* show table */}
-        <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
-          <table className="min-w-full border border-gray-200 bg-white rounded-lg">
-            <thead>
-              <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Contact Number
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Whatsapp Number
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  ResumeTitle
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  work Experience
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Current Ctc
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Current Location
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  state
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Preferred Location
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  dob
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Age
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  designation
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  current Employeer
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  postal Address
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Country
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  City
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  UG Course
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  PG Course
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Post PG Course
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Reason 1
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Reason 2
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Reason 3
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Tags
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>{candidateTabledata}</tbody>
-          </table>
-        </div>
-      </Layout>
-    );
-}
+      </section>
+      {/* show table */}
+      <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
+        <table className="min-w-full border border-gray-200 bg-white rounded-lg">
+          <thead>
+            <tr className="bg-gray-100 border-b border-gray-200">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                ID
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Email
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Contact Number
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Whatsapp Number
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                ResumeTitle
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                work Experience
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Current Ctc
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Current Location
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                state
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Preferred Location
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                dob
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Age
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                designation
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                current Employeer
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                postal Address
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Country
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                City
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                UG Course
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                PG Course
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Post PG Course
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Reason 1
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Reason 2
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Reason 3
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Tags
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>{candidateTabledata}</tbody>
+        </table>
+      </div>
+    </Layout>
+  );
+};
 
-export default Candidate
+export default Candidate;

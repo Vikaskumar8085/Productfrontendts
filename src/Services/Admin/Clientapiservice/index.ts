@@ -25,3 +25,8 @@ export const deleteclientapicall = async (id:any) => {
   const response = await apiInstance.delete(`/client/remove-client/${id}`);
   return response.data;
 };
+
+export const fetchHasAnswered = async () => {
+  const response = await apiInstance.get("/client/fetch-hasanswer");
+  return response.data;
+}
