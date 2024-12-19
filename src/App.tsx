@@ -21,6 +21,8 @@ import { Toaster } from 'react-hot-toast';
 import Security from './Pages/DashboardPages/SecurityQAPage/Security';
 import ClientSecurity from './Pages/DashboardPages/ClientSecurityPage/ClientSecurity';
 import ResetPassword from './Pages/AuthPages/ResetPassword/ResetPassword';
+import ReasonPage from './Pages/ReasonLeavingJob/ReasonLeavingJob';
+import ReasonLeavingJob from './Pages/ReasonLeavingJob/ReasonLeavingJob';
 
 function App() {
   return (
@@ -44,6 +46,7 @@ function App() {
         <Route path="/security" element={<Security />} />
         <Route path="/client-security" element={<ClientSecurity />} />
         <Route path='/resetpassword/:resetToken' element={<ResetPassword />} />
+        <Route path="/reason-leaving-job/:id" element={<ReasonLeavingJob />} />
         <Route path="*" element={<Error />} />
 
       </Routes>
