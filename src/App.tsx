@@ -23,7 +23,7 @@ import ClientSecurity from './Pages/DashboardPages/ClientSecurityPage/ClientSecu
 import ResetPassword from './Pages/AuthPages/ResetPassword/ResetPassword';
 import ReasonPage from './Pages/ReasonLeavingJob/ReasonLeavingJob';
 import ReasonLeavingJob from './Pages/ReasonLeavingJob/ReasonLeavingJob';
-
+import Analytical from './Pages/DashboardPages/AnalyticalPage/index';
 function App() {
   return (
     <>
@@ -47,6 +47,7 @@ function App() {
         <Route path="/client-security" element={<ClientSecurity />} />
         <Route path='/resetpassword/:resetToken' element={<ResetPassword />} />
         <Route path="/reason-leaving-job/:id" element={<ReasonLeavingJob />} />
+        <Route path="/analytical" element={<Analytical />} />
         <Route path="*" element={<Error />} />
 
       </Routes>
