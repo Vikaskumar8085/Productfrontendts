@@ -48,11 +48,6 @@ const ReasonLeavingJob = () => {
                 {
                     isData.map((item: any, index: any) => {
 
-                        console.log(item)
-                        const resonitems = item.reasonAnswers?.map((item: any) => {
-                            return item
-                        })
-                        console.log(resonitems, ">>>>>>>>>>>>>>>>>>>>>>>")
 
                         return (
                             <>
@@ -68,11 +63,14 @@ const ReasonLeavingJob = () => {
                                         className="block w-full px-4 py-2 border rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                                     >
                                         <option value="">Select an option</option>
-                                        {item.reasonAnswers.map((answer: any) => (
-                                            <option key={answer.id} value={(answer.id)}>
-                                                {answer}
+                                        {item.ReasonAnswers?.map((reason: any) => {
+                                            return <option value={reason.id}>
+                                                {reason.Reason_answer}
                                             </option>
-                                        ))}
+                                        })
+
+                                        }
+
                                     </select>
                                 </div>
                             </>
