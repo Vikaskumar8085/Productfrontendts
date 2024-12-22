@@ -99,7 +99,7 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                                                 }`}
                                         >
                                             <Link to="/designation" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Designation</Link>
-                                            {/* <Link to="/Reason" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Reason</Link> */}
+                                            <Link to="/Reason" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Reason</Link>
                                             {/* <Link to="/region" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Region</Link> */}
                                             <Link to="/tag" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Tag</Link>
                                             {/* <Link to="/education" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Education</Link> */}
