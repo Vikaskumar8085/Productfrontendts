@@ -24,14 +24,7 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                             <div>
                                 <Link to="/profile" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Profile</Link>
                             </div>
-
-
-                            {
-                                Roletype.Type === "superadmin" && <>
-
-
-
-                                    <div>
+                            <div>
                                         <button
                                             onClick={() => toggleDropdown(1)}
                                             className="flex items-center w-full p-2 text-left hover:bg-gray-700 focus:outline-none transition"
@@ -47,6 +40,13 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                                             {/* <Link to="/bulk-upload" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Bulk Action</Link> */}
                                         </div>
                                     </div>
+
+                            {
+                                Roletype.Type === "superadmin" && <>
+
+
+
+                                   
 
                                     {/* client management */}
                                     <div>
@@ -66,7 +66,23 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
 
                                         </div>
                                     </div>
-                                    {/* client management */}
+                                    {/* Reports */}
+
+                                    <div>
+                                        <button
+                                            onClick={() => toggleDropdown(4)}
+                                            className="flex items-center w-full p-2 text-left hover:bg-gray-700 focus:outline-none transition"
+                                        >
+                                            <span className="flex-1">Reports</span>
+                                            <span className="ml-2">{openDropdown === 4 ? '-' : '+'}</span>
+                                        </button>
+                                        <div
+                                            className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 4 ? 'max-h-40' : 'max-h-0'
+                                                }`}
+                                        >
+                                            <Link to="/analytical" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Analytical</Link>
+                                        </div>
+                                    </div>
 
 
                                     {/* Dropdown Item 2 */}
@@ -92,6 +108,7 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                                     </div>
 
                                 </>
+                                
                             }
                             
 

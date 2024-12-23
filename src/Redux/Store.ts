@@ -9,6 +9,8 @@ import Educationslice from "./EducationSlice/Educationslice";
 import DesignationSlice from "./DesignationSlice/DesignationSlice";
 import securitySlice from "./securityslice/index";
 import ProfileSlice from "./ProfileSlice/index";
+import DashboardSlice from "./DashboardSlice/index";
+import Dashboard1Slice from "./DashboardSlice1/index";
 export const store = configureStore({
   reducer: {
     user: UserSlice,
@@ -21,6 +23,8 @@ export const store = configureStore({
     designation: DesignationSlice,
     profile: ProfileSlice,
     security: securitySlice,
+    dashboard: DashboardSlice,
+    dashboard1 : Dashboard1Slice
   },
 });
 

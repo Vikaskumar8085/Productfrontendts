@@ -113,13 +113,23 @@ if(hasAnswered === "false"){
 
   return (
     <>
-      <div className="flex block">
-        <Sidebar collable={collable} Roletype={Roletype} />
-        <div className="main block w-screen overflow-hidden h-screen">
-          <Header collable={collable} setcollable={setcollable} />
-          <div className="content p-4 min-h-screen">{children}</div>
-        </div>
-      </div>
+      <div className="flex h-screen">
+
+<Sidebar collable={collable} Roletype={Roletype} />
+
+<div className="flex flex-col w-full overflow-hidden">
+
+  <Header collable={collable} setcollable={setcollable} />
+
+  <div className="flex-1 overflow-y-auto p-4">
+
+    {children}
+
+  </div>
+
+</div>
+
+</div>
 
       {/* Modal */}
       {showSecurityModal && (

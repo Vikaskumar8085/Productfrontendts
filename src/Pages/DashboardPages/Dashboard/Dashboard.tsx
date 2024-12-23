@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../../component/Layout/Layout';
-
+import DashboardComp from "../../../component/Layout/dashboard";
 const Dashboard: React.FC = () => {
     return (
         <>
 
             <Layout>
-                <div className="flex flex-row w-full  justify-center px-3 gap-10 relative block overflow-hidden">
-                    dashboard
-                </div>
+                
+                    <DashboardComp />
+               
             </Layout>
         </>
     );
