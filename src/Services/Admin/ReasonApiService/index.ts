@@ -21,7 +21,7 @@ export const removereasionapicall = async (id:number) => {
 };
 
 // update reasion api call
-export const updatereasionapicall = async (value:any,id:number) => {
+export const updatereasionapicall = async (value:any,id:any) => {
   const response: any | null = await apiInstance.put(`/reason/update-reason/${id}`,value);
   return response.data;
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Layout from "../../../component/Layout/Layout";
 import Modal from "../../../Common/Modal/Modal";
 import { useFormik } from "formik";
@@ -18,45 +18,16 @@ import {
 } from "../../../Services/Admin/ReasonApiService/index";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import toast from "react-hot-toast";
 
 const Reason: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState<boolean | null>(false);
-  const [editReasonId, setEditReasonId] = React.useState<number | null>(null); // state for edit mode
-  const [isEditMode, setIsEditMode] = React.useState<boolean>(false); // flag for edit mode
+  const [isOpen, setIsOpen] = useState<boolean | null>(false);
+  const [editReasonId, setEditReasonId] = useState<number | null>(null); // state for edit mode
+  const [isEditMode, setIsEditMode] = useState<boolean>(false); // flag for edit mode
+  const [expandedReasonId, setExpandedReasonId] = useState<number | null>(null); // state for accordion
 
   const reasonfetch = useAppSelector((state) => state.reason.value);
   const dispatch = useAppDispatch();
-
-  // Formik form setup
-  const formik = useFormik({
-    initialValues: {
-      reason: "",
-    },
-    onSubmit: async (value) => {
-      try {
-        if (isEditMode && editReasonId) {
-          // Update reason API call
-          const response: any = await updatereasionapicall(value, editReasonId);
-          if (response.success) {
-            dispatch(setupdatereasonitems(response.result)); // Update state with the edited reason
-            setIsOpen(false);
-            setIsEditMode(false); // Reset edit mode after successful update
-          }
-        } else {
-          // Create reason API call
-          const response: any = await createreasionapicall(value);
-          if (response.success) {
-            dispatch(setaddreasonitems(response.result));
-            setIsOpen(false);
-          }
-        }
-        formik.resetForm();
-      } catch (error: any) {
-        console.log(error?.message);
-        setIsOpen(false);
-      }
-    },
-  });
 
   const getReason = async () => {
     const response: any = await fetchreasionapicall();
@@ -67,9 +38,10 @@ const Reason: React.FC = () => {
 
   React.useEffect(() => {
     getReason();
-  }, [0]);
+  }, []);
 
   const handleEdit = (id: number) => {
+    console.log("edit", id);  
     const reasonToEdit = reasonfetch.find((item: any) => item.id === id);
     if (reasonToEdit) {
       formik.setValues({ reason: reasonToEdit.reason }); // Pre-fill form with the reason data
@@ -83,6 +55,71 @@ const Reason: React.FC = () => {
     const response: any = await removereasionapicall(id);
     if (response.success) {
       dispatch(setdeletereasonitems(id));
+      toast.success("Reason deleted successfully");
+    }
+  };
+
+  const [answers, setAnswers] = useState<string[]>([""]);
+
+  const formik = useFormik({
+    initialValues: {
+      reason: "",
+    },
+    onSubmit: async (values) => {
+      try {
+        if(isEditMode){
+          const value = {
+            reason: values.reason,
+            option: answers,
+          };
+          const response = await updatereasionapicall(value, editReasonId);
+          if (response.success) {
+            dispatch(setupdatereasonitems(response.result));
+            setIsOpen(false);
+            toast.success("Reason updated successfully");
+          }
+          return;
+        }
+        else{
+        const value = {
+          reason: values.reason,
+          option: answers,
+        };
+        const response = await createreasionapicall(value);
+        if (response.success) {
+          dispatch(setaddreasonitems(response.result));
+          setIsOpen(false);
+          toast.success("Reason added successfully");
+        }}
+      } catch (e) {
+        console.log(e);
+      }
+    },
+  });
+
+  // Handle adding a new answer field
+  const addAnswerField = () => {
+    setAnswers([...answers, ""]);
+  };
+
+  // Handle removing an answer field
+  const removeAnswerField = (index: number) => {
+    setAnswers(answers.filter((_, i) => i !== index));
+  };
+
+  // Handle answer field changes
+  const handleAnswerChange = (index: number, value: string) => {
+    const updatedAnswers = [...answers];
+    updatedAnswers[index] = value;
+    setAnswers(updatedAnswers);
+  };
+
+  // Toggle accordion for answers
+  const toggleAccordion = (id: number) => {
+    if (expandedReasonId === id) {
+      setExpandedReasonId(null); // Close if clicked again
+    } else {
+      setExpandedReasonId(id); // Open the clicked one
     }
   };
 
@@ -107,14 +144,12 @@ const Reason: React.FC = () => {
           <Modal setOpen={setIsOpen}>
             <div className="form bg-white shadow-lg rounded-lg p-6 w-full max-w-md mx-auto">
               <form onSubmit={formik.handleSubmit}>
-                {/* Form Title */}
                 <div className="form-title mb-4 text-center">
                   <h3 className="text-2xl font-semibold text-gray-800">
                     {isEditMode ? "Edit Reason" : "Add Reason"}
                   </h3>
                 </div>
 
-                {/* Name Field */}
                 <div className="mb-4">
                   <label
                     htmlFor="reason"
@@ -131,8 +166,40 @@ const Reason: React.FC = () => {
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
                   />
                 </div>
-
-                {/* Submit Button */}
+{!isEditMode && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-600 mb-2">
+                    Answers
+                  </label>
+                  {answers.map((answer, index) => (
+                    <div key={index} className="flex items-center mb-2">
+                      <input
+                        type="text"
+                        value={answer}
+                        onChange={(e) => handleAnswerChange(index, e.target.value)}
+                        placeholder={`Answer ${index + 1}`}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
+                      />
+                      {answers.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeAnswerField(index)}
+                          className="ml-2 bg-red-500 text-white font-medium px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                        >
+                          X
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addAnswerField}
+                    className="mt-2 bg-green-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
+                  >
+                    Add Answer
+                  </button>
+                </div>
+)}
                 <div className="w-full">
                   <button
                     type="submit"
@@ -146,7 +213,6 @@ const Reason: React.FC = () => {
           </Modal>
         )}
 
-        {/* Table for displaying reasons */}
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200 bg-white rounded-lg">
             <thead>
@@ -167,7 +233,27 @@ const Reason: React.FC = () => {
                 reasonfetch.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>{item.id}</td>
-                    <td>{item.reason}</td>
+                    <td>
+                      <div className="flex items-center">
+                        <span
+                          className="cursor-pointer text-blue-500"
+                          onClick={() => toggleAccordion(item.id)}
+                        >
+                          {item.reason}
+                        </span>
+                      </div>
+                      {expandedReasonId === item.id && (
+                        <div className="pl-4 mt-2">
+                          <div className="bg-gray-50 p-2 rounded-md">
+                            {item.ReasonAnswers.map((answer: any, idx: number) => (
+                              <p key={idx} className="text-sm text-gray-700">
+                                {answer.Reason_answer}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </td>
                     <td>
                       <div className="flex gap-2">
                         <MdOutlineEdit

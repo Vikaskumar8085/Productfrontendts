@@ -1,164 +1,3 @@
-// import React, { useState } from 'react';
-// import Layout from '../../../component/Layout/Layout';
-// import Chart from 'react-apexcharts';
-// import {candidateagedistributionapicall,taganalysisapicall,clientanalysisapicall,reasonsforleavinganalysisapicall,educationlevelanalysisapicall,geographicaldistributionapicall,currentctcanalysisapicall,workexperienceanalysisapicall,candidatedistributionapicall} from "../../../Services/Admin/AnalyticalSummary";
-
-
-// const Analytical: React.FC = () => {
-//     const [candidateAgeDistribution, setCandidateAgeDistribution] = useState<any>();
-//     const [tagAnalysis, setTagAnalysis] = useState<any>();
-//     const [clientAnalysis, setClientAnalysis] = useState<any>();
-//     const [reasonsForLeavingAnalysis, setReasonsForLeavingAnalysis] = useState<any>();
-//     const [educationLevelAnalysis, setEducationLevelAnalysis] = useState<any>();
-//     const [geographicalDistribution, setGeographicalDistribution] = useState<any>();
-//     const [currentCTCAnalysis, setCurrentCTCAnalysis] = useState<any>();
-//     const [workExperienceAnalysis, setWorkExperienceAnalysis] = useState<any>();
-//     const [candidateDistribution, setCandidateDistribution] = useState<any>();
-//     const [loading, setLoading] = useState<boolean>(true);
-//     const [error, setError] = useState<string>('');
-    
-//     const fetchCandidateAgeDistribution = async () => {
-//         try {
-//             const data = await candidateagedistributionapicall();
-//             setCandidateAgeDistribution(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchTagAnalysis = async () => {
-//         try {
-//             const data = await taganalysisapicall();
-//             setTagAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchClientAnalysis = async () => {
-//         try {
-//             const data = await clientanalysisapicall();
-//             setClientAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchReasonsForLeavingAnalysis = async () => {
-//         try {
-//             const data = await reasonsforleavinganalysisapicall();
-//             setReasonsForLeavingAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchEducationLevelAnalysis = async () => {
-//         try {
-//             const data = await educationlevelanalysisapicall();
-//             setEducationLevelAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchGeographicalDistribution = async () => {
-//         try {
-//             const data = await geographicaldistributionapicall();
-//             setGeographicalDistribution(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchCurrentCTCAnalysis = async () => {
-//         try {
-//             const data = await currentctcanalysisapicall();
-//             setCurrentCTCAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchWorkExperienceAnalysis = async () => {
-//         try {
-//             const data = await workexperienceanalysisapicall();
-//             setWorkExperienceAnalysis(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     };
-//     const fetchCandidateDistribution = async () => {
-//         try {
-//             const data = await candidatedistributionapicall();
-//             setCandidateDistribution(data);
-//         } catch (error) {
-//             setError('Failed to fetch data');
-//         }
-//     }
-//     React.useEffect(() => {
-//         fetchCandidateAgeDistribution();
-//         fetchTagAnalysis();
-//         fetchClientAnalysis();
-//         fetchReasonsForLeavingAnalysis();
-//         fetchEducationLevelAnalysis();
-//         fetchGeographicalDistribution();
-//         fetchCurrentCTCAnalysis();
-//         fetchWorkExperienceAnalysis();
-//         fetchCandidateDistribution();
-        
-        
-//     }, []);
-//     const CandidateAgeDistibutionOptions = {
-
-//         options: {
-
-//             chart: {
-
-//                 id: 'reasons-chart',
-
-//             },
-
-//             labels: candidateAgeDistribution?.labels,
-
-//             title: {
-
-//                 text: 'Candidate Age Distribution',
-
-//             },
-
-//         },
-
-//         series: candidateAgeDistribution?.series,
-
-//     };
-
-//     return (
-
-//         <Layout>
-
-//             <div className="flex flex-col w-full justify-center px-3 gap-10 relative block overflow-y-scroll">
-
-//                 <h1 className="text-2xl font-bold mb-5">Analytical</h1>
-//                 <Chart
-
-//                             options={CandidateAgeDistibutionOptions.options}
-
-//                             series={CandidateAgeDistibutionOptions.series}
-
-//                             type="pie"
-
-//                             height={350}
-
-//                         />
-            
-
-//             </div>
-        
-//         </Layout>
-
-//     );
-
-// };
-
-
-// export default Analytical;
-
-
-
 import React, { useState, useEffect } from 'react';
 import Layout from '../../../component/Layout/Layout';
 import Chart from 'react-apexcharts';
@@ -231,12 +70,22 @@ const Analytical: React.FC = () => {
             setError('Failed to fetch data');
         }
     };
+    const fetchWorkExperienceAnalysis = async () => {
+        try {
+            const data = await workexperienceanalysisapicall();
+            if (data.success){
+            setWorkExperienceAnalysis(data.data);}
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    };
     const fetchGeographicalDistribution = async () => {
         try {
             const data = await geographicaldistributionapicall();
+            console.log(data);
             // Extract locations and counts
-            const locations = data.map((item: { currentLocation: any; }) => item.currentLocation); // Extract currentLocation as labels
-            const counts = data.map((item: { count: any; }) => item.count); // Extract count as series data
+            const locations = data.data.map((item: { city: any; }) => item.city); // Extract city as labels
+            const counts = data.data.map((item: { count: any; }) => item.count); // Extract count as series data
             setGeographicalDistribution({ locations, counts });
         } catch (error) {
             setError('Failed to fetch data');
@@ -247,15 +96,6 @@ const Analytical: React.FC = () => {
             const response = await currentctcanalysisapicall();
             const data = response.data[0]; // Accessing the first object in the array
             setCurrentCTCAnalysis(data);
-        } catch (error) {
-            setError('Failed to fetch data');
-        }
-    };
-
-    const fetchWorkExperienceAnalysis = async () => {
-        try {
-            const data = await workexperienceanalysisapicall();
-            setWorkExperienceAnalysis(data);
         } catch (error) {
             setError('Failed to fetch data');
         }
@@ -273,6 +113,8 @@ const Analytical: React.FC = () => {
 
   
 
+    //fetch the token from the local storage
+    const token = localStorage.getItem('token');
     
     useEffect(() => {
         fetchCandidateAgeDistribution();
@@ -283,7 +125,7 @@ const Analytical: React.FC = () => {
         fetchCurrentCTCAnalysis();
         fetchWorkExperienceAnalysis();
         fetchCandidateDistribution();
-    }, []);
+    }, [token]);
 
     const CandidateAgeDistibutionOptions = {
         options: {
@@ -294,6 +136,7 @@ const Analytical: React.FC = () => {
             title: {
                 text: 'Candidate Age Distribution',
             },
+            
         },
         series: candidateAgeDistribution?.series,
     };
@@ -380,24 +223,45 @@ const Analytical: React.FC = () => {
                 type: 'bar' as const,
                 height: 350,
             },
+            plotOptions: {
+                bar: {
+                    horizontal: false, // Bar will be vertical, set to `true` for horizontal bars
+                    columnWidth: '50%', // Adjust the width of the bars
+                    endingShape: 'rounded', // Rounded corners for the bars
+                    stacked: true, // Enable stacking of bars
+                },
+            },
             xaxis: {
-                categories: ['Min CTC', 'Avg CTC', 'Max CTC'], // Categories on x-axis
+                categories: ['CTC Breakdown'], // Use a single category for stacked values
             },
             title: {
                 text: 'Current CTC Analysis',
             },
+            dataLabels: {
+                enabled: true, // Enable data labels on bars
+            },
+            yaxis: {
+                title: {
+                    text: 'CTC in Lacs',
+                },
+            },
         },
         series: [
             {
-                name: 'CTC Values',
-                data: [
-                    currentCTCAnalysis?.minCTC,
-                    parseFloat(currentCTCAnalysis?.avgCTC),
-                    currentCTCAnalysis?.maxCTC,
-                ],
+                name: 'Min CTC',
+                data: [currentCTCAnalysis?.minCTC || 0], // Min CTC value as the first stack
+            },
+            {
+                name: 'Avg CTC',
+                data: [parseFloat(currentCTCAnalysis?.avgCTC) || 0], // Avg CTC value as the second stack
+            },
+            {
+                name: 'Max CTC',
+                data: [currentCTCAnalysis?.maxCTC || 0], // Max CTC value as the third stack
             },
         ],
     };
+    
     const WorkExperienceOptions = {
         options: {
             chart: {
