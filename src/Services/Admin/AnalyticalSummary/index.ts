@@ -53,3 +53,28 @@ export const candidateagedistributionapicall = async () => {
     const response: any | null = await apiInstance.get("/analytical/candidate-age-distribution");
     return response.data;
 };
+
+
+// Function to get common answer combinations
+export const getCommonAnswerdemographics = async () => {
+    const response: any | null = await apiInstance.get("/analytical/answers/demographics");
+    return response.data;
+};
+
+// Function to get answer trends
+export const getAnswerTrends = async () => {
+    const response: any | null = await apiInstance.get("/analytical/answers/trends");
+    return response.data;
+};
+
+// Function to get candidate stats per answer
+export const getCandidateStatsPerAnswer = async () => {
+    const response: any | null = await apiInstance.get("/analytical/answers/candidate-stats");
+    return response.data;
+};
+
+// Function to get answers by experience
+export const getAnswersByExperience = async () => {
+    const response: any | null = await apiInstance.get("/analytical/answers/by-experience");
+    return response.data;
+};

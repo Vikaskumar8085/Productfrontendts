@@ -59,7 +59,7 @@ const fetchGeographicalDistribution = async () => {
         const data = await geographicaldistributionapicall();
         console.log(data);
         // Extract locations and counts
-        const locations = data.data.map((item: { city: any; }) => item.city); // Extract city as labels
+        const locations = data.data.map((item: { state: any; }) => item.state); // Extract state as labels
         const counts = data.data.map((item: { count: any; }) => item.count); // Extract count as series data
         setGeographicalDistribution({ locations, counts });
     } catch (error) {

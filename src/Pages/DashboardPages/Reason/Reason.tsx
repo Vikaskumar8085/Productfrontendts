@@ -246,8 +246,9 @@ const Reason: React.FC = () => {
                         <div className="pl-4 mt-2">
                           <div className="bg-gray-50 p-2 rounded-md">
                             {item.ReasonAnswers.map((answer: any, idx: number) => (
+                              
                               <p key={idx} className="text-sm text-gray-700">
-                                {answer.Reason_answer}
+                              <span><strong>{idx+1}</strong></span>  {answer.Reason_answer}
                               </p>
                             ))}
                           </div>
