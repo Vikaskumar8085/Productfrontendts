@@ -81,9 +81,6 @@ const Candidate: React.FC = () => {
       postalAddress: "",
       country: "",
       city: "",
-      reason1: "",
-      reason2: "",
-      reason3: "",
       designationId: 0 as number,
       tags: [] as any[],
       education: {
@@ -114,9 +111,6 @@ const Candidate: React.FC = () => {
       postalAddress: Yup.string(),
       country: Yup.string(),
       city: Yup.string(),
-      reason1: Yup.string(),
-      reason2: Yup.string(),
-      reason3: Yup.string(),
       designationId: Yup.number(),
       tags: Yup.array(),
       education: Yup.object({
@@ -231,9 +225,6 @@ const Candidate: React.FC = () => {
       postalAddress: candidate.postalAddress,
       country: candidate.country,
       city: candidate.city,
-      reason1: candidate.reason1,
-      reason2: candidate.reason2,
-      reason3: candidate.reason3,
       designationId: candidate.designationId,
       tags: candidate.tags.map((tag: any) => tag.id),
       education: candidate.education,
@@ -348,14 +339,14 @@ const Candidate: React.FC = () => {
           {item.education.postPgCourse}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.reason1}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.reason2}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.reason3}
-        </td>
+        {item.reasons.map((reason: any, idx: number) => (
+          <div key={idx}>
+           
+            <strong>{reason.ReasonAnswer.Reason_answer}</strong> 
+          </div>
+        ))}
+      </td>
+        
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
           {item.tags.map((tag: any, idx: number) => (
             <div key={idx}>{tag.Tag_Name}</div>
@@ -997,14 +988,9 @@ const Candidate: React.FC = () => {
                 Post PG Course
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Reason 1
+                Reasons
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Reason 2
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Reason 3
-              </th>
+
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Tags
               </th>

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../../component/Layout/Layout';
 import Chart from 'react-apexcharts';
-import {candidateagedistributionapicall,taganalysisapicall,clientanalysisapicall,reasonsforleavinganalysisapicall,educationlevelanalysisapicall,geographicaldistributionapicall,currentctcanalysisapicall,workexperienceanalysisapicall,candidatedistributionapicall} from "../../../Services/Admin/AnalyticalSummary";
+import {candidateagedistributionapicall,taganalysisapicall,clientanalysisapicall,educationlevelanalysisapicall,geographicaldistributionapicall,currentctcanalysisapicall,workexperienceanalysisapicall,candidatedistributionapicall,getCommonAnswerdemographics,getAnswersByExperience,getCandidateStatsPerAnswer,getAnswerTrends} from "../../../Services/Admin/AnalyticalSummary";
+import JobLeavingReasonsChart from './JobLeavingChart';
+import JobLeavingReasonsCharts from './JobleavingBy';
+import JobLeavingReasonsByAgeGroup from './Jobreasonsbyage';
+import JobLeavingReasonsDecember2024 from './JobleavingDecember';
 
 const Analytical: React.FC = () => {
     const [candidateAgeDistribution, setCandidateAgeDistribution] = useState<any>();
@@ -12,9 +16,13 @@ const Analytical: React.FC = () => {
     const [currentCTCAnalysis, setCurrentCTCAnalysis] = useState<any>();
     const [workExperienceAnalysis, setWorkExperienceAnalysis] = useState<any>();
     const [candidateDistribution, setCandidateDistribution] = useState<any>();
+    const [demoGraphics, setDemoGraphics] = useState<any>();
+    const [answerTrends, setAnswerTrends] = useState<any>();
+    const [candidateStatsPerAnswer, setCandidateStatsPerAnswer] = useState<any>();
+    const [answersByExperience, setAnswersByExperience] = useState<any>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    
+    console.log("answersbyexperience",answersByExperience);
     const fetchCandidateAgeDistribution = async () => {
         try {
             const data = await candidateagedistributionapicall();
@@ -84,7 +92,7 @@ const Analytical: React.FC = () => {
             const data = await geographicaldistributionapicall();
             console.log(data);
             // Extract locations and counts
-            const locations = data.data.map((item: { city: any; }) => item.city); // Extract city as labels
+            const locations = data.data.map((item: { state: any; }) => item.state); // Extract state as labels
             const counts = data.data.map((item: { count: any; }) => item.count); // Extract count as series data
             setGeographicalDistribution({ locations, counts });
         } catch (error) {
@@ -110,6 +118,40 @@ const Analytical: React.FC = () => {
             setError('Failed to fetch data');
         }
     };
+   
+    const fetchAnswerTrends = async () => {
+        try {
+            const data = await getAnswerTrends();
+            setAnswerTrends(data);
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    };
+    const fetchCandidateStatsPerAnswer = async () => {
+        try {
+            const data = await getCandidateStatsPerAnswer();
+            setCandidateStatsPerAnswer(data);
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    };
+    const fetchAnswersByExperience = async () => {
+        try {
+            const data = await getAnswersByExperience();
+            console.log(data,"api");
+            setAnswersByExperience(data);
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    };
+    const fetchDemographics = async () => { 
+        try {
+            const data = await getCommonAnswerdemographics();
+            setDemoGraphics(data);
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    }
 
   
 
@@ -125,6 +167,10 @@ const Analytical: React.FC = () => {
         fetchCurrentCTCAnalysis();
         fetchWorkExperienceAnalysis();
         fetchCandidateDistribution();
+        fetchDemographics();
+        fetchAnswerTrends();
+        fetchCandidateStatsPerAnswer();
+        fetchAnswersByExperience();
     }, [token]);
 
     const CandidateAgeDistibutionOptions = {
@@ -297,6 +343,9 @@ const Analytical: React.FC = () => {
             },
             xaxis: {
                 categories: candidateDistribution?.map((item: any) => item.designation.title), // Extract designations for X-axis
+                labels: {
+                    show: false, // Hide x-axis labels
+                },
             },
             yaxis: {
                 title: {
@@ -306,6 +355,16 @@ const Analytical: React.FC = () => {
             title: {
                 text: 'Candidate Distribution by Designation',
             },
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        position: 'top', // Position of data labels
+                    },
+                },
+            },
+            dataLabels: {
+                enabled: false, // This will ensure data labels (numbers on the bars) are hidden
+            },
         },
         series: [
             {
@@ -314,6 +373,7 @@ const Analytical: React.FC = () => {
             },
         ],
     };
+    
     
     return (
         <Layout>
@@ -449,7 +509,46 @@ const Analytical: React.FC = () => {
             <div className="text-center text-gray-500">Loading...</div>
           )}
         </div>
-
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
+          {
+            answersByExperience ? (
+              <JobLeavingReasonsChart data={answersByExperience} />
+            ) : (
+              <div className="text-center text-gray-500">Loading...</div>
+            )
+          }
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
+          {
+            candidateStatsPerAnswer ? (
+              <JobLeavingReasonsCharts data={candidateStatsPerAnswer} />
+            ) : (
+              <div className="text-center text-gray-500">Loading...</div>
+            )
+          }
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
+         {
+            demoGraphics ? (
+                <JobLeavingReasonsByAgeGroup data={demoGraphics} />
+                ) : (
+                <div className="text-center text-gray-500">Loading...</div>
+                )
+         }
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
+         {
+            answerTrends ? (
+                <JobLeavingReasonsDecember2024 data={answerTrends} />
+                ) : (
+                <div className="text-center text-gray-500">Loading...</div>
+                )
+         }
+        </div>
       </div>
     </div>
   </div>
