@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '../../../Hooks/Reduxhook/hooks';
 import { setAddSecurity, setremovesecurity, setSecurity,setUpdateSecurity } from '../../../Redux/securityslice'
 import { MdDelete, MdOutlineEdit } from 'react-icons/md'
 import DeleteDialog from '../../../Common/DeleteDialog/DeleteDialog'
+import * as Yup from 'yup'
 import toast from 'react-hot-toast'
 const Security: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -22,6 +23,10 @@ const Security: React.FC = () => {
         initialValues: {
             questionText:"",
         },
+        validationSchema: Yup.object({
+            questionText: Yup.string().required("Required"),
+            
+          }),
         onSubmit: async (values) => {
             try {
                 if (isEditMode && editReasonId !== null) {
@@ -92,31 +97,30 @@ const Security: React.FC = () => {
 
         return (
             <tbody key={id}>
-                <tr>
-                    <td>{index + 1}</td>
-                    <td>{questionText}</td>
-                    
-                    <td>
-                        <div className="flex gap-2">
-                            <MdOutlineEdit
-                                className="text-blue-500 cursor-pointer text-2xl"
-                                onClick={() => handleEdit(id)}
-                            />
-                            <div className="flex items-center justify-center bg-gray-100">
-                                <MdDelete
-                                    className="text-red-500 cursor-pointer text-2xl"
-                                    onClick={() => { setId(id); setDialogOpen(true); }}
-                                />
-                                <DeleteDialog
-                                    isOpen={isDialogOpen}
-                                    onClose={() => setDialogOpen(false)}
-                                    onDelete={() => handleDelete(isId)}
-                                />
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
+  <tr className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`}>
+    <td className="px-6 py-4 text-sm text-gray-700">{index + 1}</td>
+    <td className="px-6 py-4 text-sm text-gray-700">{questionText}</td>
+    <td className="px-6 py-4 text-sm text-gray-700">
+      <div className="flex gap-2">
+        <MdOutlineEdit
+          className="text-blue-500 cursor-pointer text-2xl"
+          onClick={() => handleEdit(id)}
+        />
+        <div className="flex items-center justify-center bg-gray-100">
+          <MdDelete
+            className="text-red-500 cursor-pointer text-2xl"
+            onClick={() => { setId(id); setDialogOpen(true); }}
+          />
+          <DeleteDialog
+            isOpen={isDialogOpen}
+            onClose={() => setDialogOpen(false)}
+            onDelete={() => handleDelete(isId)}
+          />
+        </div>
+      </div>
+    </td>
+  </tr>
+</tbody>
         );
     });
 
@@ -159,6 +163,13 @@ const Security: React.FC = () => {
                                     onBlur={formik.handleBlur}
                                     className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                                {
+                                    formik.errors.questionText && formik.touched.questionText && (
+                                        <p className="text-red-500 text-sm mt-2">
+                                            {formik.errors.questionText}
+                                        </p>
+                                    )
+                                }
                             </div>
                            
                             <div className="w-full">

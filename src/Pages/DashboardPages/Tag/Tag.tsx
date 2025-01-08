@@ -22,15 +22,19 @@ import UploadForm from "../../../component/Admin/TagComponent/UploadForm";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
-
+import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
+import * as Yup from "yup";
 interface tagTypes {
   Tag_Name: string | any;
 }
 
 function Tag() {
+  const Roletype: any = useAppSelector((state) => state.user.Role);
   const [isOpen, setIsOpen] = React.useState<Boolean | null>(false);
   const [ismodelOpen, setIsModelOpen] = React.useState<Boolean | null>(false);
   const [editTagId, setEditTagId] = React.useState<number | null>(null); // Store the ID of the tag being edited
+  const [isDialogOpen, setDialogOpen] = React.useState<boolean>(false); // State for delete dialog
+  const [isId, setId] = React.useState<number | null>(null); // State for the ID to be deleted
   const [isEditMode, setIsEditMode] = React.useState<boolean>(false); // Track edit mode state
   const dispatch = useAppDispatch();
   const tagvalue = useAppSelector((state) => state.tag.value);
@@ -39,6 +43,10 @@ function Tag() {
     initialValues: {
       Tag_Name: "",
     },
+    validationSchema: Yup.object({
+      Tag_Name: Yup.string().required("Tag Name is required"),
+      
+    }),
     onSubmit: async (value: any) => {
       try {
         if (isEditMode && editTagId !== null) {
@@ -133,8 +141,10 @@ function Tag() {
     try {
       const response: any = await removetagapicall(id);
       if (response.success) {
+        setDialogOpen(false);
         toast.success(response.message)
         dispatch(setdeleteTagitems(id)); // Remove the deleted tag from Redux state
+        
       }
     } catch (error: any) {
       toast.error("Something went wrong")
@@ -143,23 +153,34 @@ function Tag() {
 
   // Render the tags table rows
   const tagsTable = tagvalue.map((item, index) => {
-    const { id, Tag_Name } = item;
+    const { id, Tag_Name,Created_By } = item;
 
     return (
-      <tr className="border-b hover:bg-gray-50" key={id}>
-        <td className="px-4 py-2">{index + 1}</td>
-        <td className="px-4 py-2">{Tag_Name}</td>
-        <td className="px-4 py-2">
-          <div className="flex gap-2">
-            <MdOutlineEdit
-              className="text-blue-500 cursor-pointer text-2xl"
-              onClick={() => handleEdit(id)}
-            />
-            <MdDelete
-              className="text-red-500 cursor-pointer text-2xl"
-              onClick={() => handleDelete(id)}
-            />
-          </div>
+      <tr className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`} key={id}>
+        <td className="px-6 py-4 text-sm text-gray-700">{index + 1}</td>
+        <td className="px-6 py-4 text-sm text-gray-700">{Tag_Name}</td>
+        <td className="px-6 py-4 text-sm text-gray-700">
+        {(Roletype.Type === "superadmin" || 
+  (Roletype.Type === "client" && Created_By === Roletype.id)) && (
+  <>
+    <div className="flex gap-2">
+      <MdOutlineEdit
+        className="text-blue-500 cursor-pointer text-2xl"
+        onClick={() => handleEdit(id)}
+      />
+      <MdDelete
+        className="text-red-500 cursor-pointer text-2xl"
+        onClick={() => { setId(id); setDialogOpen(true); }}
+      />
+      <DeleteDialog
+  isOpen={isDialogOpen}
+  onClose={() => setDialogOpen(false)}
+  onDelete={() => isId !== null && handleDelete(isId)}
+/>
+    </div>
+  </>
+)}
+
         </td>
       </tr>
     );
@@ -216,6 +237,13 @@ function Tag() {
                   name="Tag_Name"
                   id="Tag_Name"
                 />
+                {
+                  formik.errors.Tag_Name && formik.touched.Tag_Name && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {typeof formik.errors.Tag_Name === 'string' && formik.errors.Tag_Name}
+                    </p>
+                  )
+                }
               </div>
               <div className="flex">
                 <button
@@ -248,6 +276,7 @@ function Tag() {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Tag Name
               </th>
+              
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>

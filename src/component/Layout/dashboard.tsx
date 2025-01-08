@@ -11,9 +11,10 @@ import {
   } from "../../Redux/DashboardSlice/index";
   import { setDashboard1 } from '../../Redux/DashboardSlice1';
 import { useEffect,useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import {geographicaldistributionapicall,workexperienceanalysisapicall} from "../../Services/Admin/AnalyticalSummary/index";
 import { title } from 'process';
+import { Link } from 'react-router-dom';
 const DashboardComp: React.FC = () => {
     const [geographicalDistribution, setGeographicalDistribution] = useState<any>();
     const [workExperienceAnalysis, setWorkExperienceAnalysis] = useState<any>();
@@ -23,7 +24,10 @@ const DashboardComp: React.FC = () => {
     const dashboardData = useAppSelector((state: any) => state.dashboard.value);
     const dashboardData1 = useAppSelector((state: any) => state.dashboard1.value);
     const Roletype: any = useAppSelector((state) => state.user.Role);
-
+    const navigate = useNavigate();
+    const handleChartClick = (tag: string) => {
+      navigate(`/candidate?tagName=${tag}`);
+    };
 const fetchDashboardData = async () => {
     try {
       const response:any = await fetchdashboardDataApicall();
@@ -68,7 +72,7 @@ const fetchGeographicalDistribution = async () => {
 };
 
   const candidateTags = dashboardData1.candidateTags || [];
-
+  
   const clientTags = dashboardData1.clientTags || [];
 
  // Chart data for Candidate Tags
@@ -84,6 +88,12 @@ const fetchGeographicalDistribution = async () => {
         },
         zoom: {
           enabled: true, // Allow zoom functionality
+        },
+        events: {
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            const selectedTag = candidateTags[config.dataPointIndex].name;
+            handleChartClick(selectedTag);
+          },
         },
       },
       title: {
@@ -172,6 +182,12 @@ const chartDataClientTags = {
         zoom: {
           enabled: true, // Enable zoom functionality
         },
+        events: {
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            const selectedTag = clientTags[config.dataPointIndex].name;
+            handleChartClick(selectedTag);
+          },
+        },
       },
       title: {
         text: 'Client Tags Distribution',
@@ -259,6 +275,12 @@ const chartDataClientTags = {
         zoom: {
           enabled: true, // Enable zoom functionality
         },
+        events: {
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            const selectedLocation = geographicalDistribution?.locations[config.dataPointIndex];
+            navigate(`/candidate?state=${selectedLocation}`);
+          },
+        }
       },
       title: {
         text: 'Geographical Distribution of Candidates',
@@ -343,6 +365,13 @@ const WorkExperienceOptions = {
         },
         zoom: {
           enabled: true, // Allow zooming
+        },
+        events: {
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            let selectedExperience = workExperienceAnalysis?.[config.dataPointIndex].experience_range;
+            selectedExperience = selectedExperience.replace(/\s+/g, '').replace('years', '');
+            navigate(`/candidate?workExpRange=${selectedExperience}`);
+          },
         },
       },
       title: {
@@ -431,32 +460,44 @@ const WorkExperienceOptions = {
         {/* Key Metrics Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Total Candidates */}
+          <Link to="/candidate">
           <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
+            
             <FaUser className="text-blue-600 text-3xl" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Total Candidates</h2>
               <p className="text-2xl font-bold text-blue-600">{dashboardData.candidates}</p>
             </div>
+            
           </div>
-
+          </Link>
           {/* Active Clients */}
-          {(Roletype.Type === "superadmin") ? (<div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
+          {(Roletype.Type === "superadmin") ? (
+            <Link to="/client">
+            <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
             <FaUserCheck className="text-green-600 text-3xl" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Active Clients</h2>
               <p className="text-2xl font-bold text-green-600">{dashboardData.clients}</p>
             </div>
-          </div>):(<div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
+          </div>
+          </Link>
+          ):(
+          <Link to={`/candidate?UserId=${Roletype.id}`}>
+          <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
             <FaUserCheck className="text-green-600 text-3xl" />
             <div>
               <h2 className="text-lg font-semibold text-gray-700">Created Candidates</h2>
               <p className="text-2xl font-bold text-green-600">{dashboardData?.createdCandidates}</p>
             </div>
-          </div>)
+          </div>
+          </Link>
+          )
           
           }
 
           {/* Pending Reminders */}
+          <Link to="/tag">
           <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
             <FaTag className="text-red-600 text-3xl" />
             <div>
@@ -464,9 +505,10 @@ const WorkExperienceOptions = {
               <p className="text-2xl font-bold text-red-600">{dashboardData.tags}</p>
             </div>
           </div>
-
+          </Link>
           {/* Designations */}
           {Roletype.Type === "superadmin" && <>
+          <Link to="/designation">
           <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
             <FaBriefcase className="text-purple-600 text-3xl" />
             <div>
@@ -474,8 +516,10 @@ const WorkExperienceOptions = {
               <p className="text-2xl font-bold text-purple-600">{dashboardData.designations}</p>
             </div>
           </div>
+          </Link>
           </>}
           {Roletype.Type === "client" && <>
+          <Link to="/tag">
           <div className="bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4">
             <FaBriefcase className="text-purple-600 text-3xl" />
             <div>
@@ -483,6 +527,7 @@ const WorkExperienceOptions = {
               <p className="text-2xl font-bold text-purple-600">{dashboardData?.createdtags}</p>
             </div>
           </div>
+          </Link>
           </>}
 
         </div>

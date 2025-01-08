@@ -1,25 +1,25 @@
 import apiInstance from "../../apiservice/apiInstance";
 // create education api call
 export const createEducationapicall = async (data: any) => {
-  const response = await apiInstance.post("/education/create-education", data);
+  const response = await apiInstance.post("/degrees/create-degree", data);
   return response.data;
 };
 
 // fetch educatin api call
 export const fetcheducationapicall = async () => {
-  const response = await apiInstance.get("/education/get-education");
+  const response = await apiInstance.get("/degrees//fetch-degree");
   return response.data;
 };
 
-// remove education api call
+//degrees api call
 
-export const removeEducationapicall = async () => {
-  const response = await apiInstance.delete("/education/delete-education");
+export const removeEducationapicall = async (id:number) => {
+  const response = await apiInstance.delete("/degrees/delete-degree/"+id);
   return response.data;
 };
 
 // update education api call
-export const updateEducationapicall = async () => {
-  const response = await apiInstance.put("/education/update-education");
+export const updateEducationapicall = async (data:any,id:number) => {
+  const response = await apiInstance.put("/degrees/update-degree/"+id,data);
   return response.data;
 };

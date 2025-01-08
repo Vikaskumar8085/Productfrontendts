@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../../component/Layout/Layout';
 import Chart from 'react-apexcharts';
-import {candidateagedistributionapicall,taganalysisapicall,clientanalysisapicall,educationlevelanalysisapicall,geographicaldistributionapicall,currentctcanalysisapicall,workexperienceanalysisapicall,candidatedistributionapicall,getCommonAnswerdemographics,getAnswersByExperience,getCandidateStatsPerAnswer,getAnswerTrends} from "../../../Services/Admin/AnalyticalSummary";
+import {candidateagedistributionapicall,taganalysisapicall,clientanalysisapicall,educationlevelanalysisapicall,geographicaldistributionapicall,currentctcanalysisapicall,workexperienceanalysisapicall,candidatedistributionapicall,getCommonAnswerdemographics,getAnswersByExperience,getCandidateStatsPerAnswer,getAnswerTrends,getAnswersByDistribution} from "../../../Services/Admin/AnalyticalSummary";
 import JobLeavingReasonsChart from './JobLeavingChart';
 import JobLeavingReasonsCharts from './JobleavingBy';
 import JobLeavingReasonsByAgeGroup from './Jobreasonsbyage';
 import JobLeavingReasonsDecember2024 from './JobleavingDecember';
+import AnswerDistributionChart from './AnswerDistriibutionChart';
+import { useAppSelector } from '../../../Hooks/Reduxhook/hooks';
 
 const Analytical: React.FC = () => {
+    const Roletype: any = useAppSelector((state) => state.user.Role);
     const [candidateAgeDistribution, setCandidateAgeDistribution] = useState<any>();
     const [tagAnalysis, setTagAnalysis] = useState<any>();
     const [educationLevelAnalysis, setEducationLevelAnalysis] = useState<any>();
@@ -17,9 +20,10 @@ const Analytical: React.FC = () => {
     const [workExperienceAnalysis, setWorkExperienceAnalysis] = useState<any>();
     const [candidateDistribution, setCandidateDistribution] = useState<any>();
     const [demoGraphics, setDemoGraphics] = useState<any>();
-    const [answerTrends, setAnswerTrends] = useState<any>();
+    // const [answerTrends, setAnswerTrends] = useState<any>();
     const [candidateStatsPerAnswer, setCandidateStatsPerAnswer] = useState<any>();
     const [answersByExperience, setAnswersByExperience] = useState<any>();
+    const [answersByDistribution, setAnswersByDistribution] = useState<any>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     console.log("answersbyexperience",answersByExperience);
@@ -119,14 +123,7 @@ const Analytical: React.FC = () => {
         }
     };
    
-    const fetchAnswerTrends = async () => {
-        try {
-            const data = await getAnswerTrends();
-            setAnswerTrends(data);
-        } catch (error) {
-            setError('Failed to fetch data');
-        }
-    };
+   
     const fetchCandidateStatsPerAnswer = async () => {
         try {
             const data = await getCandidateStatsPerAnswer();
@@ -152,6 +149,15 @@ const Analytical: React.FC = () => {
             setError('Failed to fetch data');
         }
     }
+    const fetchAnswersByDistribution = async () => {
+        try {
+            const data = await getAnswersByDistribution();
+            setAnswersByDistribution(data);
+        } catch (error) {
+            setError('Failed to fetch data');
+        }
+    }
+
 
   
 
@@ -159,18 +165,23 @@ const Analytical: React.FC = () => {
     const token = localStorage.getItem('token');
     
     useEffect(() => {
+        fetchAnswersByDistribution();
         fetchCandidateAgeDistribution();
         fetchTagAnalysis();
-        fetchClientAnalysis();
+        if (Roletype.Type === 'superadmin') {
+            fetchClientAnalysis();
+        }
+        
         fetchEducationLevelAnalysis();
         fetchGeographicalDistribution();
         fetchCurrentCTCAnalysis();
         fetchWorkExperienceAnalysis();
         fetchCandidateDistribution();
         fetchDemographics();
-        fetchAnswerTrends();
+        // fetchAnswerTrends();
         fetchCandidateStatsPerAnswer();
         fetchAnswersByExperience();
+        
     }, [token]);
 
     const CandidateAgeDistibutionOptions = {
@@ -207,6 +218,7 @@ const Analytical: React.FC = () => {
             title: {
                 text: 'Client Status Analysis',
             },
+            
         },
         series: clientAnalysis?.series,
     };
@@ -389,7 +401,16 @@ const Analytical: React.FC = () => {
 
       {/* Content */}
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-        
+      <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
+         {
+            answersByDistribution ? (
+                <AnswerDistributionChart data={answersByDistribution} />
+                ) : (
+                <div className="text-center text-gray-500">Loading...</div>
+                )
+         }
+        </div>
         {/* Analytical Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Analytical</h2>
@@ -421,6 +442,7 @@ const Analytical: React.FC = () => {
         </div>
 
         {/* Client Status Analysis Section */}
+        {Roletype.Type === 'superadmin' && (<>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Client Status Analysis</h2>
           {clientAnalysis ? (
@@ -434,6 +456,7 @@ const Analytical: React.FC = () => {
             <div className="text-center text-gray-500">Loading...</div>
           )}
         </div>
+        </>)}
 
         {/* Education Level Analysis Section */}
         <div className="bg-white p-6 rounded-lg shadow-md">
@@ -539,16 +562,8 @@ const Analytical: React.FC = () => {
                 )
          }
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Job Leaving Reason</h2>
-         {
-            answerTrends ? (
-                <JobLeavingReasonsDecember2024 data={answerTrends} />
-                ) : (
-                <div className="text-center text-gray-500">Loading...</div>
-                )
-         }
-        </div>
+        
+        
       </div>
     </div>
   </div>

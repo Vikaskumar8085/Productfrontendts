@@ -29,8 +29,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const getUserRoleType = async () => {
     try {
       const response: any = await getUserapiCall();
+      console.log(response, "mera response");
       if (response.success) {
         dispatch(setUserRole(response.result));
+        
       }
     } catch (error: any) {
       toast.error(error?.message);

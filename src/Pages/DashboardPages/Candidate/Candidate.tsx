@@ -3,6 +3,7 @@ import Layout from "../../../component/Layout/Layout";
 import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
 import Modal from "../../../Common/Modal/Modal";
 import { useFormik } from "formik";
+import { Link, useLocation } from 'react-router-dom';
 import { candidateTypes } from "../../../Services/Admin/CandidateApiService/candidatetypes";
 import {
   addproductapicall,
@@ -27,7 +28,7 @@ import {
 } from "../../../Redux/CandidateSlice/CandidateSlice";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
 import toast from "react-hot-toast";
-import { fetchtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
+import { fetchtagapicall,createtagapicall } from "../../../Services/Admin/Tagapiservice/tagapiservece";
 import { MdDelete, MdEdit } from "react-icons/md";
 import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
 import {
@@ -38,7 +39,12 @@ import Select from "react-select";
 import * as Yup from "yup";
 import CreatableSelect from "react-select/creatable";
 import { addDesignationapicall } from "../../../Services/Admin/Designation/index";
+import { TfiDownload } from "react-icons/tfi";
+
+
+
 const Candidate: React.FC = () => {
+  const Roletype: any = useAppSelector((state) => state.user.Role);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [ugdegree, setUgdegree] = useState<[]>([]);
   const [pgdegree, setPgdegree] = useState<[]>([]);
@@ -47,18 +53,116 @@ const Candidate: React.FC = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [isOpen, setIsOpen] = useState<boolean | null>(false);
-  const [tags, setTags] = useState<[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  
   interface DesignationType {
     id: number;
     title: string;
   }
+  interface Filters {
+
+    name: string;
   
+    email: string;
+  
+    contactNumber: string;
+  
+    // Add other fields as necessary
+  
+  }
+  
+  const location = useLocation();
+  const [filters, setFilters] = useState<{
+    name: string;
+    email: string;
+    contactNumber: string;
+    whatsappNumber: string;
+    resumeTitle: string;
+    workExp: string;
+    currentCTC: string;
+    currentLocation: string;
+    state: string;
+    preferredLocation: string;
+    dob: string;
+    age: string;
+    designation: string;
+    currentEmployer: string;
+    postalAddress: string;
+    country: string;
+    city: string;
+    ugCourse: string;
+    pgCourse: string;
+    postPgCourse: string;
+    reasonAnswer: string;
+    tagName: string;
+  }>({
+    name: '',
+    email: '',
+    contactNumber: '',
+    whatsappNumber: '',
+    resumeTitle: '',
+    workExp: '',
+    currentCTC: '',
+    currentLocation: '',
+    state: '',
+    preferredLocation: '',
+    dob: '',
+    age: '',
+    designation: '',
+    currentEmployer: '',
+    postalAddress: '',
+    country: '',
+    city: '',
+    ugCourse: '',
+    pgCourse: '',
+    postPgCourse: '',
+    reasonAnswer: '',
+    tagName: '',
+  });
+  
+  
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  
+  const [totalPages, setTotalPages] = useState<number>(1);
+  
+  const [limit, setLimit] = useState<number>(20);
   const [designation, setDesignation] = useState<any[]>([]);
   const [region, setRegion] = useState<any>("");
   const [countryid, setCountryid] = useState<any>(0);
   const [stateid, setstateid] = useState<any>(0);
   const [cityid, setCityid] = useState<any>(0);
   const dispatch = useAppDispatch();
+  useEffect(() => {
+
+    const queryParams = new URLSearchParams(location.search);
+
+    const reasonAnswer = queryParams.get('reasonAnswer');
+    const UserId = queryParams.get('UserId');
+    const tagName = queryParams.get('tagName');
+    const state = queryParams.get('state');
+    const workExpRange = queryParams.get('workExpRange');
+    if (reasonAnswer) {
+
+      setFilters((prev) => ({ ...prev, reasonAnswer })); // Set reasonAnswer in filters
+
+    }
+    if (UserId) {
+
+      setFilters((prev) => ({ ...prev, UserId })); // Set UserId in
+    }
+    if (tagName) {
+
+      setFilters((prev) => ({ ...prev, tagName })); // Set tagName in filters
+    }
+    if (state) {
+
+      setFilters((prev) => ({ ...prev, state })); // Set state in filters
+    }
+    if (workExpRange){
+      setFilters((prev) => ({ ...prev, workExpRange })); // Set workExpRange in filters
+    }
+
+  }, [location.search]);
   const candidatevalues = useAppSelector((state) => state.candidate.value);
   interface DesignationType {
     id: number;
@@ -101,22 +205,24 @@ const Candidate: React.FC = () => {
       email: Yup.string()
         .email("Invalid email format.")
         .required("Email is required."),
-      workExp: Yup.string(),
-      currentCTC: Yup.string(),
+        workExp: Yup.string()
+        .matches(/^\d+(\.\d+)? Y$/, "Invalid Work Experience. Please provide in Y format. For example 2 Y or 2.5 Y"),
+      currentCTC: Yup.string()
+        .matches(/^\d+(\.\d+)? LPA$/, "Invalid Current CTC. Please provide in LPA format. For example 2.5 LPA or 5 LPA"),
       currentLocation: Yup.string(),
-      state: Yup.string(),
+      state: Yup.string().nullable(),
       preferredLocation: Yup.string(),
       dob: Yup.date(),
       currentEmployeer: Yup.string(),
       postalAddress: Yup.string(),
-      country: Yup.string(),
-      city: Yup.string(),
+      country: Yup.string().nullable(),
+      city: Yup.string().nullable(),
       designationId: Yup.number(),
       tags: Yup.array(),
       education: Yup.object({
-        ugCourse: Yup.string(),
-        pgCourse: Yup.string(),
-        postPgCourse: Yup.string(),
+        ugCourse: Yup.string().nullable(),
+        pgCourse: Yup.string().nullable(),
+        postPgCourse: Yup.string().nullable(),
       }),
     }),
     //console if error
@@ -126,7 +232,7 @@ const Candidate: React.FC = () => {
         values.state = stateid.name;
         values.country = "India";
         values.city = cityid.name;
-
+        console.log("values", values);
         let response;
         if (editMode && selectedCandidate) {
           response = await updatecandidateapicall(selectedCandidate.id, values);
@@ -162,14 +268,22 @@ const Candidate: React.FC = () => {
     setstateid(0);
     setCityid(0);
   };
+  
   const fetchcandidatedata = async () => {
     try {
-      const response = await fetchcandidatetapicall();
+      const response = await fetchcandidatetapicall({
+        page: currentPage,
+        limit: limit,
+        ...filters,
+      });
       if (response.success) {
         dispatch(setCandidate(response.result));
+        setTotalPages(response.totalPages); // Set total pages from response
       }
+     
     } catch (error: any) {
-      console.log(error?.message);
+      console.log(error?.response.data.message);
+      
     }
   };
 
@@ -186,10 +300,21 @@ const Candidate: React.FC = () => {
       console.log(error);
     }
   };
-
+  const fetchDataIfNeeded = async () => {
+    if (tags.length === 0) {
+      await fetchtags();
+    }
+    if (designation.length === 0) {
+      await fetchdesignations();
+    }
+    if (ugdegree.length === 0 || pgdegree.length === 0 || postpgdegree.length === 0) {
+      await fetchdegree();
+    }
+  };
   const handleEdit = async (candidate: any) => {
     setSelectedCandidate(candidate);
     setEditMode(true);
+    await fetchDataIfNeeded();
     const countries = await GetCountries();
     const countryObj = countries.find((c: any) => c.name === candidate.country);
 
@@ -226,7 +351,10 @@ const Candidate: React.FC = () => {
       country: candidate.country,
       city: candidate.city,
       designationId: candidate.designationId,
-      tags: candidate.tags.map((tag: any) => tag.id),
+      tags: candidate.tags.map((tag: any) => ({
+        id: tag.id,
+        Tag_Name: tag.Tag_Name
+      })),
       education: candidate.education,
     });
     setIsOpen(true);
@@ -268,16 +396,14 @@ const Candidate: React.FC = () => {
       setPostpgdegree(postpgdegree);
     }
   };
-  React.useEffect(() => {
-    fetchdegree();
-  }, []);
-  console.log("formikerrors", formik.errors);
+ 
+  
   const candidateTabledata = candidatevalues.map((item: any, index: any) => {
     return (
       <tr key={index}>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {index + 1}
-        </td>
+  {(currentPage - 1) * limit + index + 1}
+</td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
           {item.name}
         </td>
@@ -330,13 +456,22 @@ const Candidate: React.FC = () => {
           {item.city}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.education.ugCourse}
+          {
+  //it can be null
+  item.education.ugCourse? item.education.ugCourse: ""
+  }
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.education.pgCourse}
+          {
+  //it can be null
+          item.education.pgCourse? item.education.pgCourse: ""
+          }
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.education.postPgCourse}
+          {
+  //it can be null
+          item.education.postPgCourse? item.education.postPgCourse: ""
+          }
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
         {item.reasons.map((reason: any, idx: number) => (
@@ -347,41 +482,50 @@ const Candidate: React.FC = () => {
         ))}
       </td>
         
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+  {item.tags.map((tag: any, idx: number) => (
+    <span key={idx} className="inline-block bg-gray-100 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 mr-1 mb-1">
+      {tag.Tag_Name}
+    </span>
+  ))}
+</td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          {item.tags.map((tag: any, idx: number) => (
-            <div key={idx}>{tag.Tag_Name}</div>
-          ))}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-          <div className="flex items-center justify-center gap-2">
-            <MdEdit
-              className="text-blue-500 cursor-pointer text-3xl"
-              onClick={() => handleEdit(item)}
-            />
-            <MdDelete
-              className="text-red-500 cursor-pointer text-3xl"
-              onClick={() => {
-                setSelectedId(item.id);
-                setDialogOpen(true);
-              }}
-            />
-            <DeleteDialog
-              isOpen={isDialogOpen}
-              onClose={() => setDialogOpen(false)}
-              onDelete={() => handleDelete(selectedId!)}
-            />
-          </div>
+        {(Roletype.Type === "superadmin" || 
+  (Roletype.Type === "client" && item.UserId === Roletype.id)) && (
+  <>
+    <div className="flex items-center justify-center gap-2">
+      <MdEdit
+        className="text-blue-500 cursor-pointer text-3xl"
+        onClick={() => handleEdit(item)}
+      />
+      <MdDelete
+        className="text-red-500 cursor-pointer text-3xl"
+        onClick={() => {
+          setSelectedId(item.id);
+          setDialogOpen(true);
+        }}
+      />
+      <DeleteDialog
+        isOpen={isDialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onDelete={() => handleDelete(selectedId!)}
+      />
+    </div>
+  </>
+)}
+
         </td>
       </tr>
     );
   });
-
+  
+  
+  
   useEffect(() => {
+    console.log("filters", filters);
     fetchcandidatedata();
-    fetchtags();
-    fetchdesignations();
-  }, [0]);
-
+  
+  }, [filters, currentPage, limit]);
   const fetchdesignations = async () => {
     try {
       const response = await fetchdesignationapicall();
@@ -403,20 +547,33 @@ const Candidate: React.FC = () => {
       console.log(error?.message);
     }
   };
-
+  const handleAddCandidate = () => {
+  resetForm();
+  fetchDataIfNeeded();
+  setIsOpen(true);
+};
   return (
     <Layout>
       <Breadcrumb pageName="Candidate" />
-      <section className="product gap-2 flex flex-row mb-3 p-2 bg-gray-200">
+      <section className="product gap-2 flex flex-row mb-3 p-2 bg-gray-200 justify-between">
+        <div className="flex gap-2">
         <button
-          onClick={() => {
-            resetForm();
-            setIsOpen(true);
-          }}
+          onClick={handleAddCandidate}
           className="bg-white capitalize border py-1 px-3 "
         >
           add candidate
         </button>
+        {Roletype.Type === "superadmin" && (<>
+        <Link to="/bulk-upload">
+        <button
+          className="bg-white px-4 py-2 rounded-md text-1xl capitalize"
+          
+        >
+          Upload CSV
+        </button>
+        </Link>
+        </>)}
+        </div>
         {/* model */}
         {isOpen && (
           <Modal
@@ -506,8 +663,8 @@ const Candidate: React.FC = () => {
   <CreatableSelect
   formatCreateLabel={(inputValue) => `Create ${inputValue}`}
     options={designation}
-    getOptionLabel={(option: any) => option.title}
-    getOptionValue={(option: any) => option.id}
+    getOptionLabel={(option: any) => option.title || option.label}
+    getOptionValue={(option: any) => option.id || option.value}
     onChange={(e: DesignationType | null) => {
       if (e) {
         formik.setFieldValue("designationId", e.id);
@@ -531,8 +688,8 @@ const Candidate: React.FC = () => {
         // Update Formik value
         formik.setFieldValue("designationId", newOption.id);
       } catch (error: any) {
-        console.error("Error creating designation:", error.message);
-        toast.error("Failed to create designation. Please try again.");
+        console.error("Error creating designation:", error?.response.data.message);
+        toast.error(error?.response.data.message);
       }
     }}
     value={designation.find(
@@ -879,25 +1036,43 @@ const Candidate: React.FC = () => {
 
                     {/* Tags Field */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Tags
-                      </label>
-                      <Select
-                        isMulti
-                        options={tags}
-                        getOptionLabel={(option: any) => option.Tag_Name}
-                        getOptionValue={(option: any) => option.id.toString()}
-                        onChange={(e: any) => {
-                          formik.setFieldValue(
-                            "tags",
-                            e.map((tag: any) => tag.id)
-                          );
-                        }}
-                        value={tags.filter((tag: any) =>
-                          formik.values.tags.includes(tag.id)
-                        )}
-                      />
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700">
+    Tags
+  </label>
+ 
+  <CreatableSelect
+  isMulti
+  options={tags.filter((tag: any) => {
+    if (Roletype.Type === "superadmin") {
+      // Superadmin can access all tags
+      return true;
+    } else if (Roletype.Type === "client") {
+      // Clients can only access tags they created
+      return tag.Created_By === Roletype.id;
+    }
+    // Exclude tags if no conditions match
+    return false;
+  })}
+  getOptionLabel={(option: any) => option.Tag_Name || option.label}
+  getOptionValue={(option: any) => option.id?.toString() || option.value}
+  onChange={(selectedOptions: any) => {
+    formik.setFieldValue("tags", selectedOptions);
+  }}
+  onCreateOption={async (inputValue: string) => {
+    try {
+      const response: any = await createtagapicall({ Tag_Name: inputValue });
+      if (response.success) {
+        const newTag = response.result;
+        setTags([...tags, newTag]);
+        formik.setFieldValue("tags", [...formik.values.tags, newTag]);
+      }
+    } catch (error: any) {
+      console.log(error?.message);
+    }
+  }}
+  value={formik.values.tags}
+/>
+</div>
                   </div>
                 </div>
 
@@ -918,89 +1093,141 @@ const Candidate: React.FC = () => {
                     <option value="upload csv" onClick={}>Csv upload</option>
 
                 </select> */}
+
+        
+<div>
+    <input
+      type="text"
+      placeholder="search by name"
+      className="border border-gray-300 p-2"
+      onChange={(e) => {
+        setFilters({ ...filters, name: e.target.value });
+      }}
+    />
+  </div>
+
       </section>
+      
       {/* show table */}
       <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
-        <table className="min-w-full border border-gray-200 bg-white rounded-lg">
-          <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Contact Number
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Whatsapp Number
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                ResumeTitle
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                work Experience
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Current Ctc
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Current Location
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                state
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Preferred Location
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                dob
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Age
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                designation
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                current Employeer
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                postal Address
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Country
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                City
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                UG Course
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                PG Course
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Post PG Course
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Reasons
-              </th>
-
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Tags
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>{candidateTabledata}</tbody>
-        </table>
+      <table className="min-w-full border border-gray-200 bg-white rounded-lg">
+  <thead>
+    <tr className="bg-gray-100 border-b border-gray-200">
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">SR.NO.</th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Name
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Email
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Contact Number
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Whatsapp Number
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Resume Title
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Work Experience
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        Current CTC
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Current Location
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        State
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Preferred Location
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        DOB
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Age
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        Designation
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        Current Employer
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Postal Address
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        Country
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        City
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        UG Course
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+        
+        PG Course
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        Post PG Course
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider flex flex-col">
+        
+        Reasons
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+       
+        Tags
+      </th>
+      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+    </tr>
+  </thead>
+  <tbody>{candidateTabledata}</tbody>
+</table>
+<div className="flex justify-between items-center mt-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+    <div>
+      <span className="text-sm text-gray-700">Page {currentPage} of {totalPages}</span>
+    </div>
+    <div className="space-x-2">
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="bg-gray-300 hover:bg-gray-400 text-gray-700 disabled:bg-gray-200 rounded p-2 text-sm"
+      >
+        Previous
+      </button>
+      <button
+        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className="bg-gray-300 hover:bg-gray-400 text-gray-700 disabled:bg-gray-200 rounded p-2 text-sm"
+      >
+        Next
+      </button>
+    </div>
+  </div>
       </div>
     </Layout>
   );

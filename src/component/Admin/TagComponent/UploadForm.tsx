@@ -12,6 +12,7 @@ interface FormValues {
 function UploadForm() {
 
     const [csvData, setCsvData] = useState<string[][] | null>(null);
+    const [Errors, setErrors] = useState<string[]>([]);
     const dispatch = useAppDispatch();
     const tagvalue = useAppSelector((state) => state.tag.value);
     // formik 
@@ -34,16 +35,32 @@ function UploadForm() {
                 formdata.append("file", values.file);
                 const response: any = await uploadcsvapicall(formdata);
                 if (response.success) {
-                    toast.success(response.message)
-                    dispatch(setaddItems(response.result));
+                    
+                    //reset form and set csv data to null
+                    resetForm();
+                    setCsvData(null);
+                    if (response.errors && response.errors.length > 0) {
+                        // Handle case when some records were successful, and some failed
+                        if (response.importedCount > 0){
+                        toast.success(`${response.importedCount} Tags Successfully Imported`);
+                        dispatch(setaddItems(response.result));
+                        }
+                        // response.errors.forEach((error: any) => {
+                        //     toast.error(error);
+                        // });
+                        setErrors(response.errors);
+                    } else if (response.importedCount > 0) {
+                        // Handle case when all records were successful
+                        toast.success(`${response.importedCount} Tags Successfully Imported`);
+                    }
                 }
-                window.location.href = "/tag"
+                
             } catch (error: any) {
-                console.log(error?.message)
+                toast.error(error?.response?.data?.message);
             }
         },
     });
-
+    console.log(Errors);
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.currentTarget.files ? event.currentTarget.files[0] : null;
         formik.setFieldValue("file", file);
@@ -62,7 +79,7 @@ function UploadForm() {
 
 
     return (
-        <section className="flex flex-col">
+        <>
             <form onSubmit={formik.handleSubmit} className="w-full max-w-sm bg-white rounded-lg p-6 mb-6">
                 <div className="mb-4">
                     <label htmlFor="file" className="block text-gray-700 font-semibold mb-2">
@@ -118,7 +135,30 @@ function UploadForm() {
                     </table>
                 </div>
             )}
-        </section>
+            {Errors.length > 0 && (
+                <div className="w-full overflow-auto bg-white shadow-lg rounded-lg p-6 overflow-y-auto max-h-[500px]">
+                    <h2 className="text-lg font-semibold mb-4">Errors</h2>
+                    <table className="table-auto w-full border-collapse">
+                        <thead>
+                            <tr>
+                                <th className="border px-4 py-2 text-gray-600 font-semibold bg-gray-100">
+                                    Error
+                                    </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Errors.map((error: any, index: number) => (
+                                            <tr key={index} className="hover:bg-gray-50">
+                                                <td className="border px-4 py-2 text-red-600">
+                                                    {error}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+        </>
     )
 }
 
