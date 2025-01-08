@@ -44,13 +44,19 @@ const JobLeavingReasonsByAgeGroup: React.FC<JobLeavingReasonsByAgeGroupProps> = 
         yaxis: {
             title: {
                 text: 'Candidate Count'
+            },
+            labels: {
+                show: false
             }
+        },
+        dataLabels: {
+            enabled: false, // This will ensure data labels (numbers on the bars) are hidden
         },
         series: seriesData
     };
 
     return (
-        <div style={{ maxWidth: '800px', margin: '35px auto' }}>
+        <div style={{ maxWidth: '800px' }}>
             <Chart options={options} series={options.series} type="bar" height={350} />
         </div>
     );

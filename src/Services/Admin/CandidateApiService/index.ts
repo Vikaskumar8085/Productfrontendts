@@ -17,11 +17,16 @@ export const addproductapicall = async (data: any) => {
 };
 // fetch product api service
 
-export const fetchcandidatetapicall = async () => {
-  const response: any | null = await apiInstance.get(
-    "/candidate/fetch-candidate"
-  );
+export const fetchcandidatetapicall = async (params: any) => {
+
+  const response: any | null = await apiInstance.get("/candidate/fetch-candidate", {
+
+    params, // This will automatically serialize the params object into query parameters
+
+  });
+
   return response.data;
+
 };
 
 // remove candidate api service
@@ -53,4 +58,15 @@ export const csvbulkuploadapicall = async (payload: any) => {
     payload
   );
   return response.data;
+};
+export const fetchcandidatetapicall1 = async (params: any) => {
+
+  const response: any | null = await apiInstance.get("/candidate/fetch-candidate1", {
+
+    params, // This will automatically serialize the params object into query parameters
+
+  });
+
+  return response.data;
+
 };

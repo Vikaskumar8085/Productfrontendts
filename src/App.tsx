@@ -24,6 +24,8 @@ import ResetPassword from './Pages/AuthPages/ResetPassword/ResetPassword';
 import ReasonPage from './Pages/ReasonLeavingJob/ReasonLeavingJob';
 import ReasonLeavingJob from './Pages/ReasonLeavingJob/ReasonLeavingJob';
 import Analytical from './Pages/DashboardPages/AnalyticalPage/index';
+import Report from './Pages/DashboardPages/Reports/index';
+import TagUpload from './Pages/DashboardPages/Tag/TagUpload';
 function App() {
   return (
     <>
@@ -48,6 +50,8 @@ function App() {
         <Route path='/resetpassword/:resetToken' element={<ResetPassword />} />
         <Route path="/reason-leaving-job/:id" element={<ReasonLeavingJob />} />
         <Route path="/analytical" element={<Analytical />} />
+        <Route path="/report" element={<Report />} />
+        <Route path="/bulk-tag-upload" element={<TagUpload />} />
         <Route path="*" element={<Error />} />
 
       </Routes>

@@ -78,3 +78,8 @@ export const getAnswersByExperience = async () => {
     const response: any | null = await apiInstance.get("/analytical/answers/by-experience");
     return response.data;
 };
+
+export const getAnswersByDistribution = async () => {
+    const response: any | null = await apiInstance.get("/analytical/answers/distribution");
+    return response.data;
+};

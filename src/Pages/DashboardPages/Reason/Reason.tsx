@@ -16,15 +16,18 @@ import {
   updatereasionapicall,
   removereasionapicall,
 } from "../../../Services/Admin/ReasonApiService/index";
-import { MdOutlineEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-import toast from "react-hot-toast";
+import { MdOutlineEdit,MdVisibility,MdDelete } from "react-icons/md";
 
+import toast from "react-hot-toast";
+import DeleteDialog from "../../../Common/DeleteDialog/DeleteDialog";
+import * as Yup from "yup";
 const Reason: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean | null>(false);
   const [editReasonId, setEditReasonId] = useState<number | null>(null); // state for edit mode
   const [isEditMode, setIsEditMode] = useState<boolean>(false); // flag for edit mode
   const [expandedReasonId, setExpandedReasonId] = useState<number | null>(null); // state for accordion
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false); // state for delete dialog
+  const [isId, setId] = useState<number | null>(null); // state for selected id
 
   const reasonfetch = useAppSelector((state) => state.reason.value);
   const dispatch = useAppDispatch();
@@ -41,7 +44,7 @@ const Reason: React.FC = () => {
   }, []);
 
   const handleEdit = (id: number) => {
-    console.log("edit", id);  
+    console.log("edit", id);
     const reasonToEdit = reasonfetch.find((item: any) => item.id === id);
     if (reasonToEdit) {
       formik.setValues({ reason: reasonToEdit.reason }); // Pre-fill form with the reason data
@@ -54,6 +57,7 @@ const Reason: React.FC = () => {
   const handleDelete = async (id: number) => {
     const response: any = await removereasionapicall(id);
     if (response.success) {
+      setDialogOpen(false);
       dispatch(setdeletereasonitems(id));
       toast.success("Reason deleted successfully");
     }
@@ -65,9 +69,13 @@ const Reason: React.FC = () => {
     initialValues: {
       reason: "",
     },
+    validationSchema: Yup.object({
+      reason: Yup.string().required("Required"),
+      
+    }),
     onSubmit: async (values) => {
       try {
-        if(isEditMode){
+        if (isEditMode) {
           const value = {
             reason: values.reason,
             option: answers,
@@ -79,18 +87,18 @@ const Reason: React.FC = () => {
             toast.success("Reason updated successfully");
           }
           return;
+        } else {
+          const value = {
+            reason: values.reason,
+            option: answers,
+          };
+          const response = await createreasionapicall(value);
+          if (response.success) {
+            dispatch(setaddreasonitems(response.result));
+            setIsOpen(false);
+            toast.success("Reason added successfully");
+          }
         }
-        else{
-        const value = {
-          reason: values.reason,
-          option: answers,
-        };
-        const response = await createreasionapicall(value);
-        if (response.success) {
-          dispatch(setaddreasonitems(response.result));
-          setIsOpen(false);
-          toast.success("Reason added successfully");
-        }}
       } catch (e) {
         console.log(e);
       }
@@ -165,41 +173,50 @@ const Reason: React.FC = () => {
                     placeholder="Enter reason"
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
                   />
+                  {
+                    formik.errors.reason && formik.touched.reason && (
+                      <p className="text-red-500 text-sm mt-2">
+                        {formik.errors.reason}
+                      </p>
+                    )
+                  }
                 </div>
-{!isEditMode && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-600 mb-2">
-                    Answers
-                  </label>
-                  {answers.map((answer, index) => (
-                    <div key={index} className="flex items-center mb-2">
-                      <input
-                        type="text"
-                        value={answer}
-                        onChange={(e) => handleAnswerChange(index, e.target.value)}
-                        placeholder={`Answer ${index + 1}`}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
-                      />
-                      {answers.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeAnswerField(index)}
-                          className="ml-2 bg-red-500 text-white font-medium px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
-                        >
-                          X
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addAnswerField}
-                    className="mt-2 bg-green-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
-                  >
-                    Add Answer
-                  </button>
-                </div>
-)}
+                {!isEditMode && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      Answers
+                    </label>
+                    {answers.map((answer, index) => (
+                      <div key={index} className="flex items-center mb-2">
+                        <input
+                          type="text"
+                          value={answer}
+                          onChange={(e) =>
+                            handleAnswerChange(index, e.target.value)
+                          }
+                          placeholder={`Answer ${index + 1}`}
+                          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 text-gray-700"
+                        />
+                        {answers.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeAnswerField(index)}
+                            className="ml-2 bg-red-500 text-white font-medium px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                          >
+                            X
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addAnswerField}
+                      className="mt-2 bg-green-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
+                    >
+                      Add Answer
+                    </button>
+                  </div>
+                )}
                 <div className="w-full">
                   <button
                     type="submit"
@@ -218,10 +235,10 @@ const Reason: React.FC = () => {
             <thead>
               <tr className="bg-gray-100 border-b border-gray-200">
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  ID
+                  SR NO.
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Reason Name
+                  Reason
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Actions
@@ -231,9 +248,16 @@ const Reason: React.FC = () => {
             <tbody>
               {reasonfetch &&
                 reasonfetch.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <td>{item.id}</td>
-                    <td>
+                  <tr
+                    key={index}
+                    className={`border-t ${
+                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } hover:bg-gray-100`}
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex items-center">
                         <span
                           className="cursor-pointer text-blue-500"
@@ -241,29 +265,46 @@ const Reason: React.FC = () => {
                         >
                           {item.reason}
                         </span>
+                        
                       </div>
                       {expandedReasonId === item.id && (
                         <div className="pl-4 mt-2">
                           <div className="bg-gray-50 p-2 rounded-md">
-                            {item.ReasonAnswers.map((answer: any, idx: number) => (
-                              
-                              <p key={idx} className="text-sm text-gray-700">
-                              <span><strong>{idx+1}</strong></span>  {answer.Reason_answer}
-                              </p>
-                            ))}
+                            {item.ReasonAnswers.map(
+                              (answer: any, idx: number) => (
+                                <p key={idx} className="text-sm text-gray-700">
+                                  <span>
+                                    <strong>{idx + 1}</strong>
+                                  </span>{" "}
+                                  {answer.Reason_answer}
+                                </p>
+                              )
+                            )}
                           </div>
                         </div>
                       )}
                     </td>
-                    <td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="flex gap-2">
+                      <MdVisibility
+              className="text-blue-500 cursor-pointer text-2xl ml-2"
+              onClick={() => toggleAccordion(item.id)}
+            />
                         <MdOutlineEdit
                           className="text-blue-500 cursor-pointer text-2xl"
                           onClick={() => handleEdit(item.id)}
                         />
                         <MdDelete
                           className="text-red-500 cursor-pointer text-2xl"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => {
+                            setId(item.id);
+                            setDialogOpen(true);
+                          }}
+                        />
+                        <DeleteDialog
+                          isOpen={isDialogOpen}
+                          onClose={() => setDialogOpen(false)}
+                          onDelete={() => isId !== null && handleDelete(isId)}
                         />
                       </div>
                     </td>

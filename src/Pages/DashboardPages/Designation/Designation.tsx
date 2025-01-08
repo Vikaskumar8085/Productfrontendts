@@ -3,6 +3,7 @@ import Layout from "../../../component/Layout/Layout";
 import Breadcrumb from "../../../Common/BreadCrumb/BreadCrumb";
 import Modal from "../../../Common/Modal/Modal";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   addDesignationapicall,
   fetchdesignationapicall,
@@ -37,12 +38,18 @@ const Designation: React.FC = () => {
   const designationfetch = useAppSelector(
     (state: any) => state.designation.value
   );
+  const [isId, setId] = React.useState<number | null>(null);
   const dispatch = useAppDispatch();
 
   const formik = useFormik<DesigantionType>({
     initialValues: {
       title: "",
     },
+    //add validation
+    validationSchema: Yup.object({
+      title: Yup.string().required("Required"),
+      
+    }),
     onSubmit: async (value) => {
       try {
         if (isEdit && editDesignationId) {
@@ -97,7 +104,7 @@ const Designation: React.FC = () => {
         setDialogOpen(false)
       }
     } catch (error: any) {
-      toast.error("Something went wrong")
+      toast.error("Some Candidates are associated with this designation")
     }
     
   };
@@ -118,17 +125,17 @@ const Designation: React.FC = () => {
   return (
     <Layout>
       <Breadcrumb pageName="Designation" />
-      <div className="designation_header mb-2">
+      <section className="p-2 bg-gray-300 w-full relative block overflow-x-hidden mb-3">
         <button
           onClick={() => {
             setOpen(true);
             setIsEdit(false); // Reset to add mode when opening modal
           }}
-          className="px-4 py-2 bg-yellow-400 border capitalize"
+          className="m-3 px-4 py-2 bg-white rounded-sm text-md"
         >
           Add Designation
         </button>
-      </div>
+        </section>
 
       {isOpen && (
         <Modal setOpen={setOpen}>
@@ -148,6 +155,11 @@ const Designation: React.FC = () => {
                   name="title"
                   id="title"
                 />
+                {formik.errors.title && formik.touched.title && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {formik.errors.title}
+                  </p>
+                )}
               </div>
               <div className="flex">
                 <button
@@ -167,7 +179,7 @@ const Designation: React.FC = () => {
           <thead>
             <tr className="bg-gray-100 border-b border-gray-200">
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                ID
+                SR. No.
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Title
@@ -179,32 +191,31 @@ const Designation: React.FC = () => {
           </thead>
 
           <tbody>
-            {designationfetch?.map((item: any, index: number) => (
-              <tr key={item.id}>
-                <td>{index + 1}</td>
-                <td>{item.title}</td>
-                <td>
-                  <div className="flex gap-2">
-                    <MdOutlineEdit
-                      className="text-blue-500 cursor-pointer text-2xl"
-                      onClick={() => handleEdit(item.id)}
-                    />
-                    <div className="flex items-center justify-center bg-gray-100">
-                      <MdDelete
-                      className="text-red-500 cursor-pointer text-2xl"
-                      onClick={() => setDialogOpen(true)}
-                      />
-                      <DeleteDialog
-                        isOpen={isDialogOpen}
-                        onClose={() => setDialogOpen(false)}
-                        onDelete={() => handleDelete(item.id)}
-                      />
-                    </div>
-                    
-                  </div>
-                </td>
-              </tr>
-            ))}
+          {designationfetch?.map((item: any, index: number) => (
+  <tr key={item.id} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`}>
+    <td className="px-6 py-4 text-sm text-gray-700">{index + 1}</td>
+    <td className="px-6 py-4 text-sm text-gray-700">{item.title}</td>
+    <td className="px-6 py-4 text-sm text-gray-700">
+      <div className="flex gap-2">
+        <MdOutlineEdit
+          className="text-blue-500 cursor-pointer text-2xl"
+          onClick={() => handleEdit(item.id)}
+        />
+        <div className="flex items-center justify-center bg-gray-100">
+          <MdDelete
+            className="text-red-500 cursor-pointer text-2xl"
+            onClick={() => { setId(item.id); setDialogOpen(true); }}
+          />
+           <DeleteDialog
+  isOpen={isDialogOpen}
+  onClose={() => setDialogOpen(false)}
+  onDelete={() => isId !== null && handleDelete(isId)}
+/>
+        </div>
+      </div>
+    </td>
+  </tr>
+))}
           </tbody>
         </table>
       </div>

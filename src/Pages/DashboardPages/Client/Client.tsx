@@ -22,6 +22,7 @@ import {
   setdeleteclient,
 } from "../../../Redux/ClientSlice/Clientslice";
 import toast from "react-hot-toast";
+import * as Yup from "yup";
 interface clienttypes {
   FirstName: string;
   LastName: string;
@@ -71,9 +72,22 @@ const Client: React.FC = () => {
       Address: "",
       PostCode: "",
       GstNumber: "",
-      Status: "",
+      Status: "Active",
       tags: [] as any[],
     },
+    validationSchema: Yup.object({
+      FirstName: Yup.string().required("First Name is required"),
+      LastName: Yup.string().required("Last Name is required"),
+      Email: Yup.string().email("Invalid email").required("Email is required"),
+      Phone: Yup.string()
+      .matches(/^[0-9]{10}$/, "Contact number must be a 10-digit number.")
+      .required("Phone number is required."),
+      Address: Yup.string().required("Address is required"),
+      PostCode: Yup.string(),
+      GstNumber: Yup.string().min(15, "GST number must be 15 characters").max(15, "GST number must be 15 characters").required("GST number is required"),
+      Status: Yup.string().required("Status is required")
+      
+    }),
     onSubmit: async (values) => {
       try {
         let response: any;
@@ -258,6 +272,9 @@ const Client: React.FC = () => {
                     type="text"
                     id="FirstName"
                   />
+                  {formik.touched.FirstName && formik.errors.FirstName && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.FirstName}</p>
+                  )}
                 </div>
 
                 <div>
@@ -274,6 +291,9 @@ const Client: React.FC = () => {
                     type="text"
                     id="LastName"
                   />
+                  {formik.touched.LastName && formik.errors.LastName && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.LastName}</p>
+                  )}
                 </div>
               </div>
 
@@ -291,6 +311,9 @@ const Client: React.FC = () => {
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="Email"
                 />
+                {formik.touched.Email && formik.errors.Email && (
+                  <p className="text-red-500 text-sm mt-1">{formik.errors.Email}</p>
+                )}
               </div>
 
               <div>
@@ -307,6 +330,9 @@ const Client: React.FC = () => {
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="Phone"
                 />
+                {formik.touched.Phone && formik.errors.Phone && (
+                  <p className="text-red-500 text-sm mt-1">{formik.errors.Phone}</p>
+                )}
               </div>
 
               <div>
@@ -323,6 +349,9 @@ const Client: React.FC = () => {
                   type="text"
                   id="Address"
                 />
+                {formik.touched.Address && formik.errors.Address && (
+                  <p className="text-red-500 text-sm mt-1">{formik.errors.Address}</p>
+                )}
               </div>
 
               <div>
@@ -339,6 +368,11 @@ const Client: React.FC = () => {
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="PostCode"
                 />
+                {
+                  formik.touched.PostCode && formik.errors.PostCode && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.PostCode}</p>
+                  )
+                }
               </div>
 
               <div>
@@ -355,6 +389,11 @@ const Client: React.FC = () => {
                   type="text"
                   id="GstNumber"
                 />
+                {
+                  formik.touched.GstNumber && formik.errors.GstNumber && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.GstNumber}</p>
+                  )
+                }
               </div>
 
               <div>
@@ -370,9 +409,14 @@ const Client: React.FC = () => {
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   id="Status"
                 >
-                  <option value="Active">Active</option>
+                  <option value="Active" selected>Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
+                {
+                  formik.touched.Status && formik.errors.Status && (
+                    <p className="text-red-500 text-sm mt-1">{formik.errors.Status}</p>
+                  )
+                }
               </div>
               <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -394,6 +438,7 @@ const Client: React.FC = () => {
                           formik.values.tags.includes(tag.id)
                         )}
                       />
+                     
                     </div>
 
               <div>
@@ -413,7 +458,7 @@ const Client: React.FC = () => {
         <table className="min-w-full border border-gray-300 bg-white text-left text-sm text-gray-700">
           <thead>
             <tr className="border-b bg-gray-100">
-              <th className="px-4 py-2 font-medium text-gray-900">ID</th>
+              <th className="px-4 py-2 font-medium text-gray-900">SR.NO.</th>
               <th className="px-4 py-2 font-medium text-gray-900">
                 First Name
               </th>

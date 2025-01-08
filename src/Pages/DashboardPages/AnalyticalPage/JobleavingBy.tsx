@@ -31,7 +31,12 @@ const JobLeavingReasonsCharts: React.FC<JobLeavingReasonsChartsProps> = ({ data 
         yaxis: {
             title: {
                 text: 'Total Candidates'
-            }
+            },
+            labels: {
+                show: false, // Hide x-axis labels
+            },
+        },dataLabels: {
+            enabled: false, // This will ensure data labels (numbers on the bars) are hidden
         },
         series: [{
             name: 'Total Candidates',
@@ -40,7 +45,7 @@ const JobLeavingReasonsCharts: React.FC<JobLeavingReasonsChartsProps> = ({ data 
     };
 
     return (
-        <div style={{ maxWidth: '800px', margin: '35px auto' }}>
+        <div style={{ maxWidth: '800px' }}>
             <Chart options={options} series={options.series} type="bar" height={350} />
         </div>
     );

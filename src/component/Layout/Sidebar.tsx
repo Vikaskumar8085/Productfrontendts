@@ -17,10 +17,12 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                 <div className="flex h-screen">
                     <div className="bg-gray-800 text-white w-64 p-4 space-y-6">
                         {/* Sidebar Header */}
-                        <div className="text-xl font-semibold">Company Logo</div>
+                        <div className="text-xl font-semibold">CMS</div>
                         {/* Sidebar Links with Dropdowns */}
                         <nav>
-
+                        <div>
+                                <Link to="/dashboard" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Dashboard</Link>
+                            </div>
                             <div>
                                 <Link to="/profile" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Profile</Link>
                             </div>
@@ -66,6 +68,9 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
 
                                         </div>
                                     </div>
+                                    </>
+                                
+                            }
                                     {/* Reports */}
 
                                     <div>
@@ -80,7 +85,8 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                                             className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 4 ? 'max-h-40' : 'max-h-0'
                                                 }`}
                                         >
-                                            <Link to="/analytical" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Analytical</Link>
+                                            <Link to="/analytical" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Analytics</Link>
+                                            <Link to="/report" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Report</Link>
                                         </div>
                                     </div>
 
@@ -98,18 +104,24 @@ function Sidebar({ collable, Roletype }: sidbarprops) {
                                             className={`pl-4 overflow-hidden transition-max-height duration-500 ease-in-out ${openDropdown === 2 ? 'max-h-auto' : 'max-h-0'
                                                 }`}
                                         >
+                                            {
+                                Roletype.Type === "superadmin" && <>
                                             <Link to="/designation" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Designation</Link>
                                             <Link to="/Reason" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Reason</Link>
+                                            <Link to="/education" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Education</Link>
+                                            </>}
                                             {/* <Link to="/region" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Region</Link> */}
+                                            
                                             <Link to="/tag" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Tag</Link>
-                                            {/* <Link to="/education" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">Education</Link> */}
+                                           
+                                            {
+                                Roletype.Type === "superadmin" && <>
                                             <Link to="/security" className="block p-2 hover:bg-gray-700 focus:outline-none focus:bg-gray-600">security</Link>
+                                            </>}
                                         </div>
                                     </div>
 
-                                </>
                                 
-                            }
                             
 
 
