@@ -11,13 +11,17 @@ import Select from "react-select"; // Using react-select for multi-select dropdo
 import { CSVLink } from "react-csv"; // CSV export
 import { jsPDF } from "jspdf"; // PDF export
 import autoTable from "jspdf-autotable"; // Importing jspdf-autotable plugin
+import {
+ 
+  fetchdegreeapicall,
+} from "../../../Services/Admin/DegreeProgram/index";
 
 const Report: React.FC = () => {
   const dispatch = useAppDispatch();
   const candidatevalues = useAppSelector((state) => state.candidate.value);
 
   // Define type for filter keys
-  type FilterKeys = "reasonAnswer" | "tags" | "designation" | "workExpRange" | "currentCTC" | "city" | "state";
+  type FilterKeys = "reasonAnswer" | "tags" | "designation" | "workExpRange" | "currentCTCRange" | "city" | "state" | "degreeName";
 
   // State for the filters
   const [filters, setFilters] = useState<Record<FilterKeys, any>>({
@@ -25,44 +29,39 @@ const Report: React.FC = () => {
     tags: [],
     designation: [],
     workExpRange: "",
-    currentCTC: "",
+    currentCTCRange: "",
     city: "",
     state: "",
+    degreeName:[],
   });
 
   const [reasonOptions, setReasonOptions] = useState<{ value: number; label: string; options?: { value: number; label: string }[] }[]>([]);
   const [tagOptions, setTagOptions] = useState<{ value: number; label: string }[]>([]);
   const [designationOptions, setDesignationOptions] = useState<{ value: number; label: string }[]>([]);
+  const [degrees,setDegrees] = useState<{ value: number; label: string }[]>([]);
   const [selectedReasons, setSelectedReasons] = useState<any[]>([]);
+  console.log(selectedReasons, "selectedReasons");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 20; // Define the limit variable
   // Handler for selecting/deselecting options
   const handleReasonChange = (selected: any) => {
     setSelectedReasons(selected || []); // Store selected options
+    setFilters({
+      ...filters,
+      reasonAnswer: selected ? selected.map((option: any) => option.value) : [],
+    });
   };
   // Fetch data for reasons, tags, and designations
   useEffect(() => {
     const fetchFiltersData = async () => {
       try {
         // Fetch Tags
-        const tagsResponse: any = await fetchtagapicall();
+       
         // Fetch Designations
-        const designationResponse = await fetchdesignationapicall();
+        
         // Fetch Reasons
         const reasonsResponse = await fetchreasionapicall();
-
-        // Process tags data
-        if (tagsResponse.success) {
-          setTagOptions(tagsResponse.result.map((item: any) => ({ value: item.id, label: item.Tag_Name })));
-        }
-
-        // Process designations data
-        if (designationResponse.success) {
-          setDesignationOptions(designationResponse.result.map((item: any) => ({ value: item.id, label: item.title })));
-        }
-
-        // Process reasons data
         if (reasonsResponse.success) {
           const reasonData = reasonsResponse.result.map((item: any) => ({
             value: item.id,
@@ -74,6 +73,24 @@ const Report: React.FC = () => {
           }));
           setReasonOptions(reasonData);
         }
+
+        
+        const tagsResponse: any = await fetchtagapicall();
+        // Process tags data
+        if (tagsResponse.success) {
+          setTagOptions(tagsResponse.result.map((item: any) => ({ value: item.id, label: item.Tag_Name })));
+        }
+        const designationResponse = await fetchdesignationapicall();
+        // Process designations data
+        if (designationResponse.success) {
+          setDesignationOptions(designationResponse.result.map((item: any) => ({ value: item.id, label: item.title })));
+        }
+        const degreeResponse:any = await fetchdegreeapicall();
+        if (degreeResponse.success){
+          setDegrees(degreeResponse.result.map((item:any)=>({value:item.id,label:item.name})));
+        }
+        // Process reasons data
+       
       } catch (error) {
         console.error("Error fetching filter data", error);
       }
@@ -84,6 +101,7 @@ const Report: React.FC = () => {
 
   // Fetch candidate data with filters
   const fetchcandidatedata = async () => {
+    console.log("Filters:", filters);
     try {
       const response = await fetchcandidatetapicall1({
         page: currentPage,
@@ -119,9 +137,10 @@ const Report: React.FC = () => {
 
   // Handle text filter changes
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>, column: FilterKeys) => {
+    const value = e.target.value;
     setFilters({
       ...filters,
-      [column]: e.target.value,
+      [column]: value,
     });
   };
 
@@ -132,9 +151,10 @@ const Report: React.FC = () => {
       tags: [],
       designation: [],
       workExpRange: "",
-      currentCTC: "",
+      currentCTCRange: "",
       city: "",
       state: "",
+      degreeName:[],
     });
   };
 
@@ -147,7 +167,7 @@ const Report: React.FC = () => {
       (filters.tags.length === 0 || filters.tags.some((tagId: any) => candidate.tags?.some((tag: any) => tag.id === tagId))) &&
       (filters.designation.length === 0 || filters.designation.includes(candidate.designation?.id)) &&
       (candidate.workExp?.toLowerCase().includes(filters.workExpRange) || filters.workExpRange === "") &&
-      (candidate.ctc?.toString().toLowerCase().includes(filters.currentCTC) || filters.currentCTC === "") &&
+      (candidate.ctc?.toString().toLowerCase().includes(filters.currentCTCRange) || filters.currentCTCRange === "") &&
       (candidate.city?.toLowerCase().includes(filters.city) || filters.city === "") &&
       (candidate.state?.toLowerCase().includes(filters.state) || filters.state === "")
     );
@@ -159,7 +179,7 @@ const Report: React.FC = () => {
     doc.text("Candidate Report", 10, 10);
     autoTable(doc, {
       head: [["Reasons", "Tags", "Designation", "Work Experience", "CTC", "City", "State"]],
-      body: filteredCandidates.map((candidate: any) => [
+      body: candidatevalues.map((candidate: any) => [
         candidate.reasons
         ? candidate.reasons.map((reason: any) => reason.ReasonAnswer?.Reason_answer).join(", ")
         : "", // Default to an empty string if no reasons exist
@@ -189,7 +209,7 @@ const Report: React.FC = () => {
           Download PDF
         </button>
         <CSVLink
-          data={filteredCandidates.map((candidate: any) => ({
+          data={candidatevalues.map((candidate: any) => ({
             Reasons: candidate.reasons
       ? candidate.reasons.map((reason: any) => reason.ReasonAnswer?.Reason_answer).join(", ")
       : "", // Join reasons' answers with commas    
@@ -243,25 +263,37 @@ const Report: React.FC = () => {
               value={designationOptions.filter((option) => filters.designation.includes(option.value))}
             />
           </div>
+          {/* <div className="flex flex-col w-full sm:w-1/2 md:w-1/4 lg:w-1/6">
+            <label htmlFor="degrees" className="text-sm font-medium mb-1">Education</label>
+            <Select
+              id="degrees"
+              isMulti
+              options={degrees}
+              onChange={(selectedOptions) => handleMultiSelectChange(selectedOptions, "degreeName")}
+              value={degrees.filter((option) => filters.degreeName.includes(option.value))}
+            />
+          </div> */}
           {/* Filters for work experience, CTC, city, and state */}
           <div className="flex flex-col w-full sm:w-1/2 md:w-1/4 lg:w-1/6">
-            <label htmlFor="workExp" className="text-sm font-medium mb-1">Work Experience</label>
-            <input
-              id="workExp"
-              type="text"
-              className="border px-2 py-1 rounded"
-              value={filters.workExpRange}
-              onChange={(e) => handleFilterChange(e, "workExpRange")}
-            />
-          </div>
+  <label htmlFor="workExp" className="text-sm font-medium mb-1">Work Experience</label>
+  <input
+    id="workExp"
+    type="text"
+    className="border px-2 py-1 rounded"
+    value={filters.workExpRange}
+    onChange={(e) => handleFilterChange(e, "workExpRange")}
+    placeholder="e.g., 1-3"
+  />
+</div>
           <div className="flex flex-col w-full sm:w-1/2 md:w-1/4 lg:w-1/6">
             <label htmlFor="ctc" className="text-sm font-medium mb-1">CTC</label>
             <input
               id="ctc"
               type="text"
               className="border px-2 py-1 rounded"
-              value={filters.currentCTC}
-              onChange={(e) => handleFilterChange(e, "currentCTC")}
+              value={filters.currentCTCRange}
+              onChange={(e) => handleFilterChange(e, "currentCTCRange")}
+              placeholder="e.g. 5-10"
             />
           </div>
           <div className="flex flex-col w-full sm:w-1/2 md:w-1/4 lg:w-1/6">
@@ -315,7 +347,7 @@ const Report: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCandidates?.map((item: any, index: number) => (
+            {candidatevalues?.map((item: any, index: number) => (
               <tr key={index} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{(currentPage - 1) * limit + index + 1} </td>
                 <td className="px-4 py-2">

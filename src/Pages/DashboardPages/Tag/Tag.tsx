@@ -8,7 +8,7 @@ import {
   fetchtagapicall,
   removetagapicall,
   updatetagapicall,
-  uploadcsvapicall
+  uploadcsvapicall,
 } from "../../../Services/Admin/Tagapiservice/tagapiservece";
 import { useAppDispatch, useAppSelector } from "../../../Hooks/Reduxhook/hooks";
 import {
@@ -45,7 +45,6 @@ function Tag() {
     },
     validationSchema: Yup.object({
       Tag_Name: Yup.string().required("Tag Name is required"),
-      
     }),
     onSubmit: async (value: any) => {
       try {
@@ -56,7 +55,7 @@ function Tag() {
             value
           );
           if (response.success) {
-            toast.success(response.message)
+            toast.success(response.message);
             dispatch(setupdateTagitems(response.result)); // Update the Redux state
             setIsOpen(false);
           }
@@ -64,15 +63,15 @@ function Tag() {
           // If not in edit mode, create a new tag
           const response: unknown | any = await createtagapicall(value);
           if (response.success) {
-            toast.success(response.message)
+            toast.success(response.message);
             dispatch(setaddItems(response.result)); // Add the new tag to Redux state
             setIsOpen(false);
           }
         }
         formik.resetForm();
       } catch (error: any) {
-          console.log(error?.message);
-        toast.error(error.response.data.message)
+        console.log(error?.message);
+        toast.error(error.response.data.message);
         setIsOpen(false);
         formik.resetForm();
       }
@@ -99,7 +98,7 @@ function Tag() {
   const csvtemplate = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/tag/download-tag-template",
+        "http://192.168.1.31:8000/api/tag/download-tag-template",
         {
           method: "GET",
           headers: {
@@ -107,9 +106,9 @@ function Tag() {
           },
         }
       );
-      
+
       if (!response.ok) {
-        toast.error("Something went wrong")
+        toast.error("Something went wrong");
         throw new Error("Network response was not ok");
       }
       toast.success("CSV template downloaded successfully");
@@ -142,45 +141,51 @@ function Tag() {
       const response: any = await removetagapicall(id);
       if (response.success) {
         setDialogOpen(false);
-        toast.success(response.message)
+        toast.success(response.message);
         dispatch(setdeleteTagitems(id)); // Remove the deleted tag from Redux state
-        
       }
     } catch (error: any) {
-      toast.error("Something went wrong")
+      toast.error("Something went wrong");
     }
   };
 
   // Render the tags table rows
   const tagsTable = tagvalue.map((item, index) => {
-    const { id, Tag_Name,Created_By } = item;
+    const { id, Tag_Name, Created_By } = item;
 
     return (
-      <tr className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`} key={id}>
+      <tr
+        className={`border-t ${
+          index % 2 === 0 ? "bg-gray-50" : "bg-white"
+        } hover:bg-gray-100`}
+        key={id}
+      >
         <td className="px-6 py-4 text-sm text-gray-700">{index + 1}</td>
         <td className="px-6 py-4 text-sm text-gray-700">{Tag_Name}</td>
         <td className="px-6 py-4 text-sm text-gray-700">
-        {(Roletype.Type === "superadmin" || 
-  (Roletype.Type === "client" && Created_By === Roletype.id)) && (
-  <>
-    <div className="flex gap-2">
-      <MdOutlineEdit
-        className="text-blue-500 cursor-pointer text-2xl"
-        onClick={() => handleEdit(id)}
-      />
-      <MdDelete
-        className="text-red-500 cursor-pointer text-2xl"
-        onClick={() => { setId(id); setDialogOpen(true); }}
-      />
-      <DeleteDialog
-  isOpen={isDialogOpen}
-  onClose={() => setDialogOpen(false)}
-  onDelete={() => isId !== null && handleDelete(isId)}
-/>
-    </div>
-  </>
-)}
-
+          {(Roletype.Type === "superadmin" ||
+            (Roletype.Type === "client" && Created_By === Roletype.id)) && (
+            <>
+              <div className="flex gap-2">
+                <MdOutlineEdit
+                  className="text-blue-500 cursor-pointer text-2xl"
+                  onClick={() => handleEdit(id)}
+                />
+                <MdDelete
+                  className="text-red-500 cursor-pointer text-2xl"
+                  onClick={() => {
+                    setId(id);
+                    setDialogOpen(true);
+                  }}
+                />
+                <DeleteDialog
+                  isOpen={isDialogOpen}
+                  onClose={() => setDialogOpen(false)}
+                  onDelete={() => isId !== null && handleDelete(isId)}
+                />
+              </div>
+            </>
+          )}
         </td>
       </tr>
     );
@@ -237,13 +242,12 @@ function Tag() {
                   name="Tag_Name"
                   id="Tag_Name"
                 />
-                {
-                  formik.errors.Tag_Name && formik.touched.Tag_Name && (
-                    <p className="text-red-500 text-sm mt-2">
-                      {typeof formik.errors.Tag_Name === 'string' && formik.errors.Tag_Name}
-                    </p>
-                  )
-                }
+                {formik.errors.Tag_Name && formik.touched.Tag_Name && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {typeof formik.errors.Tag_Name === "string" &&
+                      formik.errors.Tag_Name}
+                  </p>
+                )}
               </div>
               <div className="flex">
                 <button
@@ -276,7 +280,7 @@ function Tag() {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Tag Name
               </th>
-              
+
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>

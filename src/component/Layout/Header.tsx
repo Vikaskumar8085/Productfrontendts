@@ -24,9 +24,9 @@ const Header = ({ collable, setcollable }: headerprops) => {
                     className="p-2 bg-gray-600 rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                     {collable ? (
-                        <TfiAlignLeft className="text-2xl" onClick={() => setcollable(false)} />
+                        <TfiAlignLeft className="text-2xl" onClick={() => setcollable(!collable)} />
                     ) : (
-                        <TfiAlignRight className="text-2xl" onClick={() => setcollable(true)} />
+                        <TfiAlignRight className="text-2xl" onClick={() => setcollable(!collable)} />
                     )}
                 </button>
 

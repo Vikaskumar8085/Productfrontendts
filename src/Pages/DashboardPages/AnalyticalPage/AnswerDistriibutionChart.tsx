@@ -39,6 +39,7 @@ const AnswerDistributionChart: React.FC<JobLeavingReasonsChartsProps> = ({ data 
     const options: ApexOptions = {
         chart: {
             type: 'pie' as const, // Set chart type to 'pie'
+            height: 350,
             events: {
                 dataPointSelection: (_event, _chartContext, config) => {
                     const selectedAnswer = reasons[config.dataPointIndex];

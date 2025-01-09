@@ -8,6 +8,7 @@ import JobLeavingReasonsByAgeGroup from './Jobreasonsbyage';
 import JobLeavingReasonsDecember2024 from './JobleavingDecember';
 import AnswerDistributionChart from './AnswerDistriibutionChart';
 import { useAppSelector } from '../../../Hooks/Reduxhook/hooks';
+import { useNavigate } from 'react-router-dom';
 
 const Analytical: React.FC = () => {
     const Roletype: any = useAppSelector((state) => state.user.Role);
@@ -26,7 +27,8 @@ const Analytical: React.FC = () => {
     const [answersByDistribution, setAnswersByDistribution] = useState<any>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    console.log("answersbyexperience",answersByExperience);
+    const navigate = useNavigate();
+    
     const fetchCandidateAgeDistribution = async () => {
         try {
             const data = await candidateagedistributionapicall();
@@ -201,11 +203,37 @@ const Analytical: React.FC = () => {
         options: {
             chart: {
                 id: 'tag-analysis-chart',
+                type: 'pie' as const,
+                height: 350,
+                toolbar: {
+                    show: true, // Show the toolbar
+                  },
+                  zoom: {
+                    enabled: true, // Enable zoom functionality
+                  },
+                  events: {
+                    dataPointSelection: (event: any, chartContext: any, config: any) => {
+                      const selectedTag = tagAnalysis?.labels[config.dataPointIndex];
+                      setTimeout(() => {
+                      navigate(`/candidate?tagName=${selectedTag}`);
+                      }, 100);
+                    },
+                }
             },
             labels: tagAnalysis?.labels,
             title: {
                 text: 'Tag Analysis for Candidates',
             },
+            yaxis: {
+                title: {
+                    text: 'Number of Candidates',
+                },
+            },
+            xaxis : {
+                labels : {
+                    show : false,
+                }
+            }
         },
         series: tagAnalysis?.series,
     };
@@ -254,6 +282,18 @@ const Analytical: React.FC = () => {
             chart: {
                 id: 'geographical-distribution-chart',
                 type: 'bar' as const, // Use bar chart for distribution
+                toolbar: {
+                    show: true, // Show the toolbar
+                  },
+                  zoom: {
+                    enabled: true, // Enable zoom functionality
+                  },
+                  events: {
+                    dataPointSelection: (event: any, chartContext: any, config: any) => {
+                      const selectedLocation = geographicalDistribution?.locations[config.dataPointIndex];
+                      navigate(`/candidate?state=${selectedLocation}`);
+                    },
+                  },
             },
             xaxis: {
                 categories: geographicalDistribution?.locations, // Set locations as x-axis categories
@@ -326,6 +366,19 @@ const Analytical: React.FC = () => {
                 id: 'work-experience-histogram',
                 type: 'bar' as const,
                 height: 350,
+                toolbar: {
+                    show: true, // Show the toolbar
+                  },
+                  zoom: {
+                    enabled: true, // Allow zooming
+                  },
+                  events: {
+                    dataPointSelection: (event: any, chartContext: any, config: any) => {
+                      let selectedExperience = workExperienceAnalysis?.[config.dataPointIndex].experience_range;
+                      selectedExperience = selectedExperience.replace(/\s+/g, '').replace('years', '');
+                      navigate(`/candidate?workExpRange=${selectedExperience}`);
+                    },
+                  },
             },
             xaxis: {
                 categories: workExperienceAnalysis?.map((item: any) => item.experience_range), // Extract experience ranges for X-axis
@@ -352,6 +405,18 @@ const Analytical: React.FC = () => {
                 id: 'candidate-distribution-bar-chart',
                 type: 'bar' as const,
                 height: 350,
+                toolbar: {
+                    show: true, // Show the toolbar
+                  },
+                  zoom: {
+                    enabled: true, // Allow zooming
+                  },
+                  events: {
+                    dataPointSelection: (event: any, chartContext: any, config: any) => {
+                      let selectedDesignation = candidateDistribution?.[config.dataPointIndex].designation.title;
+                      navigate(`/candidate?designation=${selectedDesignation}`);
+                    },
+                },
             },
             xaxis: {
                 categories: candidateDistribution?.map((item: any) => item.designation.title), // Extract designations for X-axis
