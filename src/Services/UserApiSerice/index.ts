@@ -10,6 +10,14 @@ export const loginapiservice = async (data: loginauth) => {
   const response = await apiInstance.post<loginauth>("/user/login", data);
   return response.data;
 };
+export const logoutapicall = async () => {
+  const response = await apiInstance.post("/user/logout");
+  return response.data;
+}
+export const refreshapicall = async () => {
+  const response = await apiInstance.get("/user/refresh-token");
+  return response.data;
+}
 // forget Password
 export const forgetpasswordapicall = async (data: forgetPassword) => {
   const response = await apiInstance.post("/user/forget-password", data);

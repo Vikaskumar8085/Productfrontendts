@@ -63,9 +63,21 @@ const ReasonLeavingJob: React.FC = () => {
     },
     validate: (values: FormValues) => {
       const errors: FormValues = {};
-      if (!values.reason1) {
-        errors.reason1 = "Please select a reason";
+
+      // Check if at least one reason is selected
+      if (!values.reason1 && !values.reason2 && !values.reason3) {
+        errors.reason1 = "Please select at least one reason";
       }
+    
+      // Check for unique options
+      const selectedReasons = [values.reason1, values.reason2, values.reason3].filter(Boolean);
+      const uniqueReasons = new Set(selectedReasons);
+    
+      if (selectedReasons.length !== uniqueReasons.size) {
+        errors.reason2 = "Options must be unique";
+        errors.reason3 = "Options must be unique";
+      }
+    
       return errors;
     },
   });
@@ -110,40 +122,48 @@ const ReasonLeavingJob: React.FC = () => {
 
         {/* Reason 2 (Optional) */}
         <div className="space-y-4">
-          <select
-            id="reason2"
-            name="reason2"
-            onChange={(e) => formik.setFieldValue("reason2", e.target.value)}
-            value={formik.values.reason2}
-            className="block w-full px-4 py-2 border rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            <option value="">Select a reason</option>
-            {isData?.[0]?.ReasonAnswers?.map((reason) => (
-              <option key={reason.id} value={reason.id.toString()}>
-                {reason.Reason_answer}
-              </option>
-            ))}
-          </select>
-        </div>
+  <select
+    id="reason2"
+    name="reason2"
+    onChange={(e) => formik.setFieldValue("reason2", e.target.value)}
+    value={formik.values.reason2}
+    className={`block w-full px-4 py-2 border rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
+      formik.errors.reason2 && formik.touched.reason2 ? "border-red-500" : ""
+    }`}
+  >
+    <option value="">Select a reason</option>
+    {isData?.[0]?.ReasonAnswers?.map((reason) => (
+      <option key={reason.id} value={reason.id.toString()}>
+        {reason.Reason_answer}
+      </option>
+    ))}
+  </select>
+  {formik.errors.reason2 && formik.touched.reason2 && (
+    <p className="text-red-500 text-sm">{formik.errors.reason2}</p>
+  )}
+</div>
 
-        {/* Reason 3 (Optional) */}
-        <div className="space-y-4">
-          <select
-            id="reason3"
-            name="reason3"
-            onChange={(e) => formik.setFieldValue("reason3", e.target.value)}
-            value={formik.values.reason3}
-            className="block w-full px-4 py-2 border rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          >
-            <option value="">Select a reason</option>
-            {isData?.[0]?.ReasonAnswers?.map((reason) => (
-              <option key={reason.id} value={reason.id.toString()}>
-                {reason.Reason_answer}
-              </option>
-            ))}
-          </select>
-        </div>
-
+<div className="space-y-4">
+  <select
+    id="reason3"
+    name="reason3"
+    onChange={(e) => formik.setFieldValue("reason3", e.target.value)}
+    value={formik.values.reason3}
+    className={`block w-full px-4 py-2 border rounded-md text-gray-900 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
+      formik.errors.reason3 && formik.touched.reason3 ? "border-red-500" : ""
+    }`}
+  >
+    <option value="">Select a reason</option>
+    {isData?.[0]?.ReasonAnswers?.map((reason) => (
+      <option key={reason.id} value={reason.id.toString()}>
+        {reason.Reason_answer}
+      </option>
+    ))}
+  </select>
+  {formik.errors.reason3 && formik.touched.reason3 && (
+    <p className="text-red-500 text-sm">{formik.errors.reason3}</p>
+  )}
+</div>
         <button
           type="submit"
           className="w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"

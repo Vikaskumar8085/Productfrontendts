@@ -141,6 +141,7 @@ const Candidate: React.FC = () => {
     const tagName = queryParams.get('tagName');
     const state = queryParams.get('state');
     const workExpRange = queryParams.get('workExpRange');
+    const designation = queryParams.get('designation');
     if (reasonAnswer) {
 
       setFilters((prev) => ({ ...prev, reasonAnswer })); // Set reasonAnswer in filters
@@ -160,6 +161,10 @@ const Candidate: React.FC = () => {
     }
     if (workExpRange){
       setFilters((prev) => ({ ...prev, workExpRange })); // Set workExpRange in filters
+    }
+    if (designation) {
+
+      setFilters((prev) => ({ ...prev, designation })); // Set designation in filters
     }
 
   }, [location.search]);
@@ -402,7 +407,8 @@ const Candidate: React.FC = () => {
     return (
       <tr key={index}>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-  {(currentPage - 1) * limit + index + 1}
+  
+        {(currentPage - 1) * limit + index + 1}
 </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
           {item.name}
